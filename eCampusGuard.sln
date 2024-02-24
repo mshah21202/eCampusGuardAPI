@@ -5,6 +5,12 @@ VisualStudioVersion = 25.0.1706.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eCampusGuard.API", "eCampusGuard.API\eCampusGuard.API.csproj", "{09C59B84-308B-4B4B-81D8-147B013D82FC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eCampusGuard.Core", "eCampusGuard.Core\eCampusGuard.Core.csproj", "{DE10256C-EC98-43A2-BDA0-E965B541A06E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eCampusGuard.MSSQL", "eCampusGuard.MSSQL\eCampusGuard.MSSQL.csproj", "{7122BB1A-9D92-4E7A-9B1D-10EC861BF5A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eCampusGuard.Services", "eCampusGuard.Services\eCampusGuard.Services.csproj", "{05BC6220-C000-400F-97A7-82B7AC86BBC9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +21,18 @@ Global
 		{09C59B84-308B-4B4B-81D8-147B013D82FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09C59B84-308B-4B4B-81D8-147B013D82FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09C59B84-308B-4B4B-81D8-147B013D82FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE10256C-EC98-43A2-BDA0-E965B541A06E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE10256C-EC98-43A2-BDA0-E965B541A06E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE10256C-EC98-43A2-BDA0-E965B541A06E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE10256C-EC98-43A2-BDA0-E965B541A06E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7122BB1A-9D92-4E7A-9B1D-10EC861BF5A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7122BB1A-9D92-4E7A-9B1D-10EC861BF5A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7122BB1A-9D92-4E7A-9B1D-10EC861BF5A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7122BB1A-9D92-4E7A-9B1D-10EC861BF5A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05BC6220-C000-400F-97A7-82B7AC86BBC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05BC6220-C000-400F-97A7-82B7AC86BBC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05BC6220-C000-400F-97A7-82B7AC86BBC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05BC6220-C000-400F-97A7-82B7AC86BBC9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
