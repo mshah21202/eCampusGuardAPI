@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "czYAjFznLu9rms9HIYN6ZNe48yPkFGVxJnT2juw0qYZG/mOON5S9IVSflS7lldIg4xzedMPCaiUs/RmpCvpRNA==",
+  "dgSpecHash": "e0gtLJjgp5WIsRbxmDHQVdc2mO4p5GTv2+a1tk5oodte6LAUHFyTF0NytbK6V8+U1WRc7Ed9D+IvkNu9f7kRyw==",
   "success": true,
   "projectFilePath": "/Users/mohamadshahin/Development/eCampusGuard/eCampusGuard.MSSQL/eCampusGuard.MSSQL.csproj",
   "expectedPackageFiles": [
@@ -65,7 +65,9 @@
     "/Users/mohamadshahin/.nuget/packages/system.text.encodings.web/6.0.0/system.text.encodings.web.6.0.0.nupkg.sha512",
     "/Users/mohamadshahin/.nuget/packages/system.text.json/4.7.2/system.text.json.4.7.2.nupkg.sha512",
     "/Users/mohamadshahin/.nuget/packages/system.threading.tasks.extensions/4.5.4/system.threading.tasks.extensions.4.5.4.nupkg.sha512",
-    "/Users/mohamadshahin/.nuget/packages/system.windows.extensions/6.0.0/system.windows.extensions.6.0.0.nupkg.sha512"
+    "/Users/mohamadshahin/.nuget/packages/system.windows.extensions/6.0.0/system.windows.extensions.6.0.0.nupkg.sha512",
+    "/Users/mohamadshahin/.nuget/packages/microsoft.netcore.app.ref/7.0.14/microsoft.netcore.app.ref.7.0.14.nupkg.sha512",
+    "/Users/mohamadshahin/.nuget/packages/microsoft.aspnetcore.app.ref/7.0.14/microsoft.aspnetcore.app.ref.7.0.14.nupkg.sha512"
   ],
   "logs": []
 }

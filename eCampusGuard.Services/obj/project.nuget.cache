@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "djUTedZ1e8OrK/1IP8lgPbaEgXsMkssVhWgKaKulXppQ0Jgoy0yS4M51IvUNVgQM4DFMIIdOeKdLI+ApbbVYyQ==",
+  "dgSpecHash": "TmjL6wnYaGXFkevJKi3v+KO6AMdgKsu1SQFBWgWTjwYawUN4euZ6YFQ/RvMPMb8z6p+FfeJk82qdl7TaVpnDwQ==",
   "success": true,
   "projectFilePath": "/Users/mohamadshahin/Development/eCampusGuard/eCampusGuard.Services/eCampusGuard.Services.csproj",
   "expectedPackageFiles": [
@@ -19,7 +19,9 @@
     "/Users/mohamadshahin/.nuget/packages/swashbuckle.aspnetcore.swagger/6.5.0/swashbuckle.aspnetcore.swagger.6.5.0.nupkg.sha512",
     "/Users/mohamadshahin/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.5.0/swashbuckle.aspnetcore.swaggergen.6.5.0.nupkg.sha512",
     "/Users/mohamadshahin/.nuget/packages/system.identitymodel.tokens.jwt/7.3.1/system.identitymodel.tokens.jwt.7.3.1.nupkg.sha512",
-    "/Users/mohamadshahin/.nuget/packages/system.runtime.compilerservices.unsafe/6.0.0/system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512"
+    "/Users/mohamadshahin/.nuget/packages/system.runtime.compilerservices.unsafe/6.0.0/system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
+    "/Users/mohamadshahin/.nuget/packages/microsoft.netcore.app.ref/7.0.14/microsoft.netcore.app.ref.7.0.14.nupkg.sha512",
+    "/Users/mohamadshahin/.nuget/packages/microsoft.aspnetcore.app.ref/7.0.14/microsoft.aspnetcore.app.ref.7.0.14.nupkg.sha512"
   ],
   "logs": []
 }
