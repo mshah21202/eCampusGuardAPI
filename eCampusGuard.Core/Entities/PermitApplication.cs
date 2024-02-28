@@ -1,10 +1,19 @@
 ﻿using System;
+using System.Collections;
+
 namespace eCampusGuard.Core.Entities
 {
 	public class PermitApplication
 	{
+		public enum PermitApplicationStatusEnum
+		{
+			Pending = 0,
+			AwaitingPayment = 1,
+			Denied = 2
+		}
+
 		public int Id { get; set; }
-		public int AttendingDays { get; set; }
+		public BitArray AttendingDays { get; set; }
 		public int SiblingsCount { get; set; }
 		public int AcademicYear { get; set; }
 		public string LicenseImgPath { get; set; }

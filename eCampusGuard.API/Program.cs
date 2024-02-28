@@ -13,7 +13,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<SQLDataContext>(options =>
     options.UseLazyLoadingProxies().UseSqlServer(
-        builder.Configuration.GetConnectionString("SQLConnection"), b => b.MigrationsAssembly("eCampusGuard.API")
+        builder.Configuration.GetConnectionString("SQLConnection"), b => b.MigrationsAssembly(typeof(SQLDataContext).Assembly.FullName)
     )
 );
 

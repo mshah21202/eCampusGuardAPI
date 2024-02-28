@@ -9,11 +9,11 @@ using eCampusGuard.MSSQL;
 
 #nullable disable
 
-namespace eCampusGuard.API.Migrations
+namespace eCampusGuard.MSSQL.Migrations
 {
     [DbContext(typeof(SQLDataContext))]
-    [Migration("20240225144534_InitialCreation")]
-    partial class InitialCreation
+    [Migration("20240228091600_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

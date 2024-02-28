@@ -3,9 +3,14 @@ namespace eCampusGuard.Core.Entities
 {
 	public class AccessLog
 	{
+		public enum AccessLogType
+		{
+			Entry = 0, Exit = 1
+		}
+
 		public int Id { get; set; }
 		public DateTime Timestamp { get; set; }
-		public int Type { get; set; }
+		public AccessLogType Type { get; set; }
 		
 		public int VehicleId { get; set; }
 		public virtual Vehicle Vehicle { get; set; }

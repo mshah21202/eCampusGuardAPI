@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using eCampusGuard.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,11 +26,27 @@ namespace eCampusGuard.MSSQL
 			
 		}
 
+        private int getIntFromBitArray(BitArray bitArray)
+        {
+            int value = 0;
+
+            for (int i = 0; i < bitArray.Count; i++)
+            {
+                if (bitArray[i])
+                    value += Convert.ToInt16(Math.Pow(2, i));
+            }
+
+            return value;
+        }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
 
 
             builder.Entity<User>().Property(u => u.Id).ValueGeneratedNever();
+
+			builder.Entity<Permit>().Property(p => p.Days).HasColumnType("int").HasConversion(v => getIntFromBitArray(v), v => new BitArray(v, false));
+			builder.Entity<PermitApplication>().Property(p => p.AttendingDays).HasColumnType("int").HasConversion(v => getIntFromBitArray(v), v => new BitArray(v, false));
 
             builder.Entity<UserPermit>()
 				.HasKey(up => new { up.UserId, up.PermitId });

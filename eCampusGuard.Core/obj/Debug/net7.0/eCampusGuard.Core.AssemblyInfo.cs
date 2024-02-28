@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("eCampusGuard.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e43c62a49aad3988879c938f83e25bccd8805293")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+86d97080152d027dda10069a27dacee47df7f3b0")]
 [assembly: System.Reflection.AssemblyProductAttribute("eCampusGuard.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("eCampusGuard.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

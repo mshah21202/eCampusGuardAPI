@@ -8,7 +8,7 @@ using eCampusGuard.MSSQL;
 
 #nullable disable
 
-namespace eCampusGuard.API.Migrations
+namespace eCampusGuard.MSSQL.Migrations
 {
     [DbContext(typeof(SQLDataContext))]
     partial class SQLDataContextModelSnapshot : ModelSnapshot

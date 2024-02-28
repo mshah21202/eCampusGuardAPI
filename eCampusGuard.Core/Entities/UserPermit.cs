@@ -3,7 +3,14 @@ namespace eCampusGuard.Core.Entities
 {
 	public class UserPermit
 	{
-		public int Status { get; set; }
+		public enum UserPermitStatus
+		{
+			Valid = 0,
+			Withdrawn = 1,
+			Expired = 2,
+		}
+
+		public UserPermitStatus Status { get; set; }
 		public DateTime Expiry { get; set; }
 
 		public int UserId { get; set; }
