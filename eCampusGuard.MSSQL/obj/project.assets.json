@@ -3172,11 +3172,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/mohamadshahin/Development/eCampusGuard/eCampusGuard.MSSQL/eCampusGuard.MSSQL.csproj",
+      "projectUniqueName": "/Users/mohamadshahin/Development/eCampusGuardAPI/eCampusGuard.MSSQL/eCampusGuard.MSSQL.csproj",
       "projectName": "eCampusGuard.MSSQL",
-      "projectPath": "/Users/mohamadshahin/Development/eCampusGuard/eCampusGuard.MSSQL/eCampusGuard.MSSQL.csproj",
+      "projectPath": "/Users/mohamadshahin/Development/eCampusGuardAPI/eCampusGuard.MSSQL/eCampusGuard.MSSQL.csproj",
       "packagesPath": "/Users/mohamadshahin/.nuget/packages/",
-      "outputPath": "/Users/mohamadshahin/Development/eCampusGuard/eCampusGuard.MSSQL/obj/",
+      "outputPath": "/Users/mohamadshahin/Development/eCampusGuardAPI/eCampusGuard.MSSQL/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/mohamadshahin/.nuget/NuGet/NuGet.Config"
@@ -3191,8 +3191,8 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "/Users/mohamadshahin/Development/eCampusGuard/eCampusGuard.Core/eCampusGuard.Core.csproj": {
-              "projectPath": "/Users/mohamadshahin/Development/eCampusGuard/eCampusGuard.Core/eCampusGuard.Core.csproj"
+            "/Users/mohamadshahin/Development/eCampusGuardAPI/eCampusGuard.Core/eCampusGuard.Core.csproj": {
+              "projectPath": "/Users/mohamadshahin/Development/eCampusGuardAPI/eCampusGuard.Core/eCampusGuard.Core.csproj"
             }
           }
         }
@@ -3231,12 +3231,22 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[7.0.14, 7.0.14]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[7.0.14, 7.0.14]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.313/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/Users/mohamadshahin/.vscode-dotnet-sdk/.dotnet/sdk/8.0.100/RuntimeIdentifierGraph.json"
       }
     }
   }

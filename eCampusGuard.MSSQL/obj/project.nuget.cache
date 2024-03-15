@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "msMyAbFx2TIM8hm1t3RV5ttHHFZuKNdR4PhBiJ0fkI1wjMAkGX6LIeKYYIXatJoVE59seSYe2pIPHlicarZ/2A==",
+  "dgSpecHash": "H75JwebExc5F2Xb9+K1biezf3C4ZMx3JaTmRq7jY3DHkCrFEVBg8epy0HfWd+H/AJB/eu4B5jWWp5AM9e1ysZQ==",
   "success": true,
-  "projectFilePath": "/Users/mohamadshahin/Development/eCampusGuard/eCampusGuard.MSSQL/eCampusGuard.MSSQL.csproj",
+  "projectFilePath": "/Users/mohamadshahin/Development/eCampusGuardAPI/eCampusGuard.MSSQL/eCampusGuard.MSSQL.csproj",
   "expectedPackageFiles": [
     "/Users/mohamadshahin/.nuget/packages/azure.core/1.35.0/azure.core.1.35.0.nupkg.sha512",
     "/Users/mohamadshahin/.nuget/packages/azure.identity/1.10.3/azure.identity.1.10.3.nupkg.sha512",
@@ -70,7 +70,9 @@
     "/Users/mohamadshahin/.nuget/packages/system.text.encodings.web/6.0.0/system.text.encodings.web.6.0.0.nupkg.sha512",
     "/Users/mohamadshahin/.nuget/packages/system.text.json/4.7.2/system.text.json.4.7.2.nupkg.sha512",
     "/Users/mohamadshahin/.nuget/packages/system.threading.tasks.extensions/4.5.4/system.threading.tasks.extensions.4.5.4.nupkg.sha512",
-    "/Users/mohamadshahin/.nuget/packages/system.windows.extensions/6.0.0/system.windows.extensions.6.0.0.nupkg.sha512"
+    "/Users/mohamadshahin/.nuget/packages/system.windows.extensions/6.0.0/system.windows.extensions.6.0.0.nupkg.sha512",
+    "/Users/mohamadshahin/.nuget/packages/microsoft.netcore.app.ref/7.0.14/microsoft.netcore.app.ref.7.0.14.nupkg.sha512",
+    "/Users/mohamadshahin/.nuget/packages/microsoft.aspnetcore.app.ref/7.0.14/microsoft.aspnetcore.app.ref.7.0.14.nupkg.sha512"
   ],
   "logs": []
 }

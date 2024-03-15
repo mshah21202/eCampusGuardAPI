@@ -5,7 +5,7 @@ namespace eCampusGuard.Core.Entities
 {
 	public class AppRole : IdentityRole<int>
 	{
-		public virtual IEnumerable<AppUser> AppUsers { get; set; }
+		public virtual IEnumerable<AppUserRole> UserRoles { get; set; }
 
     }
 }
