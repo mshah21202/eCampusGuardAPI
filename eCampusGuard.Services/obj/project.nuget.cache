@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "/H5j1tL8lynTo2tHPzkzCBlt2FAHngUeIMMBsojb9LmwmlZowTjVtLPUByCMO7fzUJ0crah+DhkbdV7THnVBiw==",
+  "dgSpecHash": "LXHI2OCwZ/1UkQ1bmNiFG48iLhL9JBX+S0UVJyI1M702G+2+dhYkgwcJyyPE+96QRfGVQySusA9d7nb5I/WAyg==",
   "success": true,
-  "projectFilePath": "/Users/mohamadshahin/Development/eCampusGuard/eCampusGuard.Services/eCampusGuard.Services.csproj",
+  "projectFilePath": "/Users/mohamadshahin/Development/eCampusGuardAPI/eCampusGuard.Services/eCampusGuard.Services.csproj",
   "expectedPackageFiles": [
     "/Users/mohamadshahin/.nuget/packages/automapper/12.0.1/automapper.12.0.1.nupkg.sha512",
     "/Users/mohamadshahin/.nuget/packages/automapper.extensions.microsoft.dependencyinjection/12.0.1/automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
@@ -33,7 +33,9 @@
     "/Users/mohamadshahin/.nuget/packages/swashbuckle.aspnetcore.annotations/6.5.0/swashbuckle.aspnetcore.annotations.6.5.0.nupkg.sha512",
     "/Users/mohamadshahin/.nuget/packages/swashbuckle.aspnetcore.swagger/6.5.0/swashbuckle.aspnetcore.swagger.6.5.0.nupkg.sha512",
     "/Users/mohamadshahin/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.5.0/swashbuckle.aspnetcore.swaggergen.6.5.0.nupkg.sha512",
-    "/Users/mohamadshahin/.nuget/packages/system.identitymodel.tokens.jwt/7.3.1/system.identitymodel.tokens.jwt.7.3.1.nupkg.sha512"
+    "/Users/mohamadshahin/.nuget/packages/system.identitymodel.tokens.jwt/7.3.1/system.identitymodel.tokens.jwt.7.3.1.nupkg.sha512",
+    "/Users/mohamadshahin/.nuget/packages/microsoft.netcore.app.ref/7.0.14/microsoft.netcore.app.ref.7.0.14.nupkg.sha512",
+    "/Users/mohamadshahin/.nuget/packages/microsoft.aspnetcore.app.ref/7.0.14/microsoft.aspnetcore.app.ref.7.0.14.nupkg.sha512"
   ],
   "logs": []
 }

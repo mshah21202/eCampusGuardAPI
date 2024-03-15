@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections;
+using System.Reflection.Emit;
 using eCampusGuard.Core.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace eCampusGuard.MSSQL
 {
-	public class SQLDataContext : DbContext
-	{
+	public class SQLDataContext : IdentityDbContext<AppUser, AppRole, int,
+        IdentityUserClaim<int>, AppUserRole, IdentityUserLogin<int>,
+        IdentityRoleClaim<int>, IdentityUserToken<int>>
+    {
 		// Create DbSets (Tables) for entities
 		public DbSet<AppUser> AppUsers { get; set; }
 		public DbSet<Permit> Permits { get; set; }
@@ -45,8 +50,27 @@ namespace eCampusGuard.MSSQL
 
             builder.Entity<AppUser>().Property(u => u.Id).ValueGeneratedNever();
 
-			builder.Entity<Permit>().Property(p => p.Days).HasColumnType("int").HasConversion(v => getIntFromBitArray(v), v => new BitArray(v, false));
+            builder.Entity<Permit>().Property(p => p.Days).HasColumnType("int").HasConversion(v => getIntFromBitArray(v), v => new BitArray(v, false));
 			builder.Entity<PermitApplication>().Property(p => p.AttendingDays).HasColumnType("int").HasConversion(v => getIntFromBitArray(v), v => new BitArray(v, false));
+
+            builder.Entity<AppUser>()
+                .HasMany(u => u.UserRoles)
+                .WithOne(ur => ur.AppUser)
+                .HasForeignKey(ur => ur.UserId)
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired();
+
+            builder.Entity<AppRole>()
+                .HasMany(r => r.UserRoles)
+                .WithOne(ur => ur.AppRole)
+                .HasForeignKey(ur => ur.RoleId)
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired();
+
+            builder.Entity<AppUser>()
+                .HasIndex(u => u.UserName)
+                .IsUnique();
+
 
             builder.Entity<UserPermit>()
 				.HasKey(up => new { up.UserId, up.PermitId });
