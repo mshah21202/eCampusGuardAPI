@@ -15,8 +15,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="AutoMapper\" />
+    <None Remove="TokenService\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AutoMapper\" />
+    <Folder Include="TokenService\" />
   </ItemGroup>
 </Project>

@@ -13,7 +13,7 @@ namespace eCampusGuard.Core.Entities
 		public string RegistrationDocImgPath { get; set; }
 
 		public int UserId { get; set; }
-        public virtual User User { get; set; }
+        public virtual AppUser User { get; set; }
 
         public virtual IEnumerable<AccessLog> AccessLogs { get; set; }
         public virtual IEnumerable<UserPermit> UserPermits { get; set; }

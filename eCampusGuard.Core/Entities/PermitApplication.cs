@@ -21,7 +21,7 @@ namespace eCampusGuard.Core.Entities
 		public int Status { get; set; } // Change to enum
 
 		public int UserId { get; set; }
-        public virtual User User { get; set; }
+        public virtual AppUser User { get; set; }
 
 		public int VehicleId { get; set; }
         public virtual Vehicle Vehicle { get; set; }

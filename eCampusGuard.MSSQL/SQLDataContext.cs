@@ -8,7 +8,7 @@ namespace eCampusGuard.MSSQL
 	public class SQLDataContext : DbContext
 	{
 		// Create DbSets (Tables) for entities
-		public DbSet<User> Users { get; set; }
+		public DbSet<AppUser> AppUsers { get; set; }
 		public DbSet<Permit> Permits { get; set; }
 		public DbSet<Area> Areas { get; set; }
 		public DbSet<Vehicle> Vehicles { get; set; }
@@ -43,7 +43,7 @@ namespace eCampusGuard.MSSQL
         {
 
 
-            builder.Entity<User>().Property(u => u.Id).ValueGeneratedNever();
+            builder.Entity<AppUser>().Property(u => u.Id).ValueGeneratedNever();
 
 			builder.Entity<Permit>().Property(p => p.Days).HasColumnType("int").HasConversion(v => getIntFromBitArray(v), v => new BitArray(v, false));
 			builder.Entity<PermitApplication>().Property(p => p.AttendingDays).HasColumnType("int").HasConversion(v => getIntFromBitArray(v), v => new BitArray(v, false));

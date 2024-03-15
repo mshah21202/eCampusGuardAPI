@@ -14,7 +14,7 @@ namespace eCampusGuard.Core.Entities
 		public DateTime Expiry { get; set; }
 
 		public int UserId { get; set; }
-        public virtual User User { get; set; }
+        public virtual AppUser User { get; set; }
 
 		public int PermitId { get; set; }
         public virtual Permit Permit { get; set; }
