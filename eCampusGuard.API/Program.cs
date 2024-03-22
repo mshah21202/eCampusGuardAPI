@@ -1,7 +1,10 @@
 ﻿using System.Reflection;
+using eCampusGuard.API.Data;
 using eCampusGuard.API.Extensions;
+using eCampusGuard.Core.Entities;
 using eCampusGuard.Core.Interfaces;
 using eCampusGuard.MSSQL;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -50,6 +53,23 @@ app.UseAuthorization();
 app.UseAuthentication();
 
 app.MapControllers();
+
+using var scope = app.Services.CreateScope();
+
+var services = scope.ServiceProvider;
+
+try
+{
+    var context = services.GetRequiredService<SQLDataContext>();
+    var userManager = services.GetRequiredService<UserManager<AppUser>>();
+    var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
+    await Seed.SeedUsersAndRoles(userManager, roleManager);
+}
+catch (Exception ex)
+{
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex, "Error Occured during migration");
+}
 
 app.Run();
 

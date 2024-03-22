@@ -24,11 +24,13 @@
 		<None Remove="Controllers\" />
 		<None Remove="Extensions\" />
 		<None Remove="Helpers\" />
+		<None Remove="Data\" />
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Controllers\" />
 		<Folder Include="Extensions\" />
 		<Folder Include="Helpers\" />
+		<Folder Include="Data\" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\eCampusGuard.Core\eCampusGuard.Core.csproj">
