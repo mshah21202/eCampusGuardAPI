@@ -1,6 +1,10 @@
 {
   "version": 2,
+<<<<<<< Updated upstream
   "dgSpecHash": "LXHI2OCwZ/1UkQ1bmNiFG48iLhL9JBX+S0UVJyI1M702G+2+dhYkgwcJyyPE+96QRfGVQySusA9d7nb5I/WAyg==",
+=======
+  "dgSpecHash": "DolF/62SqpAT4qQwqZ31tgp+OeGEvzt3JtXcAjLwWv6/SFJf/H5GWfU3bdF/PPd1qwTVBr+zYrkuhI127yrCMA==",
+>>>>>>> Stashed changes
   "success": true,
   "projectFilePath": "/Users/mohamadshahin/Development/eCampusGuardAPI/eCampusGuard.Services/eCampusGuard.Services.csproj",
   "expectedPackageFiles": [

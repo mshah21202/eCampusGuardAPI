@@ -67,9 +67,16 @@ namespace eCampusGuard.MSSQL
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
+            builder.Entity<AppRole>()
+                .Property(r => r.HomeScreenWidgets)
+                .HasColumnType("varchar")
+                .HasConversion(w => string.Join(',', w),
+                ws => ws.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(wss => (HomeScreenWidget)int.Parse(wss)));
+
             builder.Entity<AppUser>()
                 .HasIndex(u => u.UserName)
                 .IsUnique();
+
 
 
             builder.Entity<UserPermit>()
