@@ -1,12 +1,14 @@
 ﻿using System;
+using eCampusGuard.Core.Entities;
+
 namespace eCampusGuard.Core.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
-        //IBaseRepository<User> UserAccounts { get; }
-        //IBaseRepository<Service> Services { get; }
-        //IBaseRepository<Branch> Branches { get; }
-        //IBaseRepository<UserService> UserServices { get; }
+        IBaseRepository<AppUser> AppUsers { get; }
+        IBaseRepository<AppRole> AppRoles { get; }
+        IBaseRepository<AppUserRole> AppUserRoles { get; }
+        IBaseRepository<Notification> Notifications { get; }
         //IBaseRepository<Attendance> Attendances { get; }
 
         int Complete();

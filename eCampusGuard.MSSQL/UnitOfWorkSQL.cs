@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Runtime.CompilerServices;
+using eCampusGuard.Core.Entities;
 using eCampusGuard.Core.Interfaces;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,11 @@ namespace eCampusGuard.MSSQL
 	public class UnitOfWorkSQL : IUnitOfWork
 	{
         public readonly SQLDataContext _context;
+        public IBaseRepository<AppUser> AppUsers { get; }
+        public IBaseRepository<AppRole> AppRoles { get; }
+        public IBaseRepository<AppUserRole> AppUserRoles { get; }
+        public IBaseRepository<Notification> Notifications { get; }
+
 
         public UnitOfWorkSQL(SQLDataContext context)
 		{

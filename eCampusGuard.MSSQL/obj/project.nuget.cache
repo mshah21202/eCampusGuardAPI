@@ -1,6 +1,10 @@
 {
   "version": 2,
+<<<<<<< Updated upstream
   "dgSpecHash": "H75JwebExc5F2Xb9+K1biezf3C4ZMx3JaTmRq7jY3DHkCrFEVBg8epy0HfWd+H/AJB/eu4B5jWWp5AM9e1ysZQ==",
+=======
+  "dgSpecHash": "6IoObV9W3qLjTamd5y4xPV4Ssu3ef4M2+8elIAsMlI0GWjb5VuwbeeNx5iTqoJcSZhF0kDxY9sYgzIarxvrimw==",
+>>>>>>> Stashed changes
   "success": true,
   "projectFilePath": "/Users/mohamadshahin/Development/eCampusGuardAPI/eCampusGuard.MSSQL/eCampusGuard.MSSQL.csproj",
   "expectedPackageFiles": [
