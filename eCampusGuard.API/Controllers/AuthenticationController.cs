@@ -12,15 +12,15 @@ namespace eCampusGuard.API.Controllers
 {
 	public class AuthenticationController : BaseApiController
 	{
-		private readonly SQLDataContext _context;
+		private readonly IUnitOfWork _unitOfWork;
 		private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
 		private readonly ITokenService _tokenService;
 
 
-        public AuthenticationController(SQLDataContext context, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService)
+        public AuthenticationController(IUnitOfWork unitOfWork, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService)
 		{
-			_context = context;
+			_unitOfWork = unitOfWork;
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_tokenService = tokenService;
@@ -37,16 +37,27 @@ namespace eCampusGuard.API.Controllers
             });
 
             // Try to authenticate
-
-            var user = await _context.AppUsers.FirstAsync(x => x.UserName == loginDto.Username);
-
-            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
-
-            if (result.Succeeded) return Ok(new AuthResponseDto
+            try
             {
-                Code = AuthResponseCode.Authenticated,
-                Token = await _tokenService.CreateToken(user)
-            });
+                var user = await _unitOfWork.AppUsers.FindAsync(u => u.UserName == loginDto.Username);
+
+                var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
+
+                if (result.Succeeded) return Ok(new AuthResponseDto
+                {
+                    Code = AuthResponseCode.Authenticated,
+                    Token = await _tokenService.CreateToken(user)
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new AuthResponseDto
+                {
+                    Code = AuthResponseCode.Other,
+                    Error = e.ToString()
+                });
+            }
+            
 
             return BadRequest(new AuthResponseDto
             {
@@ -60,31 +71,42 @@ namespace eCampusGuard.API.Controllers
             // If user already exists, return error
             if (await UserExists(registerDto.Username))
             {
-                return new AuthResponseDto
+                return BadRequest(new AuthResponseDto
                 {
                     Code = AuthResponseCode.AlreadyRegistered
-                };
+                });
             }
 
-            // Create user
-
-            var user = new AppUser
+            try
             {
-                UserName = registerDto.Username,
-                Name = registerDto.Name
-            };
-
-
-            var result = await _userManager.CreateAsync(user, registerDto.Password);
-
-            // If nothing fails, return token
-            if (result.Succeeded)
-
-                return Ok(new AuthResponseDto
+                // Create user
+                var user = new AppUser
                 {
-                    Code = AuthResponseCode.RegisteredAndAuthenticated,
-                    Token = await _tokenService.CreateToken(user)
+                    UserName = registerDto.Username,
+                    Name = registerDto.Name
+                };
+
+
+                var result = await _userManager.CreateAsync(user, registerDto.Password);
+
+                // If nothing fails, return token
+                if (result.Succeeded)
+                {
+                    return Ok(new AuthResponseDto
+                    {
+                        Code = AuthResponseCode.RegisteredAndAuthenticated,
+                        Token = await _tokenService.CreateToken(user)
+                    });
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new AuthResponseDto
+                {
+                    Code = AuthResponseCode.Other,
+                    Error = e.ToString()
                 });
+            }
 
 
             return BadRequest(new AuthResponseDto
@@ -95,7 +117,9 @@ namespace eCampusGuard.API.Controllers
 
         private async Task<bool> UserExists(string username)
         {
-            return await _context.AppUsers.AnyAsync(x => x.UserName == username);
+            var user = await _unitOfWork.AppUsers.FindAsync(x => x.UserName == username);
+
+            return user != null;
         }
     }
 }
