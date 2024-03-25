@@ -15,6 +15,8 @@ namespace eCampusGuard.MSSQL
         public IBaseRepository<AppRole> AppRoles { get; }
         public IBaseRepository<AppUserRole> AppUserRoles { get; }
         public IBaseRepository<Notification> Notifications { get; }
+        public IBaseRepository<PermitApplication> PermitApplications { get; }
+
 
 
         public UnitOfWorkSQL(SQLDataContext context)

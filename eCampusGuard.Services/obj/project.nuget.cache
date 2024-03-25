@@ -1,10 +1,6 @@
 {
   "version": 2,
-<<<<<<< Updated upstream
   "dgSpecHash": "LXHI2OCwZ/1UkQ1bmNiFG48iLhL9JBX+S0UVJyI1M702G+2+dhYkgwcJyyPE+96QRfGVQySusA9d7nb5I/WAyg==",
-=======
-  "dgSpecHash": "DolF/62SqpAT4qQwqZ31tgp+OeGEvzt3JtXcAjLwWv6/SFJf/H5GWfU3bdF/PPd1qwTVBr+zYrkuhI127yrCMA==",
->>>>>>> Stashed changes
   "success": true,
   "projectFilePath": "/Users/mohamadshahin/Development/eCampusGuardAPI/eCampusGuard.Services/eCampusGuard.Services.csproj",
   "expectedPackageFiles": [
@@ -41,5 +37,12 @@
     "/Users/mohamadshahin/.nuget/packages/microsoft.netcore.app.ref/7.0.14/microsoft.netcore.app.ref.7.0.14.nupkg.sha512",
     "/Users/mohamadshahin/.nuget/packages/microsoft.aspnetcore.app.ref/7.0.14/microsoft.aspnetcore.app.ref.7.0.14.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "Undefined",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Problem reading the cache file /Users/mohamadshahin/Development/eCampusGuardAPI/eCampusGuard.Services/obj/project.nuget.cache : Invalid property identifier character: <. Path 'version', line 3, position 0."
+    }
+  ]
 }

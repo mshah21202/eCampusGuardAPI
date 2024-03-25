@@ -1355,5 +1355,13 @@
         "runtimeIdentifierGraphPath": "/Users/mohamadshahin/.vscode-dotnet-sdk/.dotnet/sdk/8.0.100/RuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "Undefined",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Problem reading the cache file /Users/mohamadshahin/Development/eCampusGuardAPI/eCampusGuard.Services/obj/project.nuget.cache : Invalid property identifier character: <. Path 'version', line 3, position 0."
+    }
+  ]
 }

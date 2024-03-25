@@ -5,6 +5,7 @@ using eCampusGuard.Core.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace eCampusGuard.MSSQL
 {
@@ -67,11 +68,18 @@ namespace eCampusGuard.MSSQL
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
+            var homeScreenWidgetsValueComparer = new ValueComparer<IEnumerable<HomeScreenWidget>>(
+                (c1, c2) => c1.SequenceEqual(c2),
+                c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                c => c.ToHashSet());
+
             builder.Entity<AppRole>()
                 .Property(r => r.HomeScreenWidgets)
-                .HasColumnType("varchar")
+                .HasColumnType("nvarchar")
                 .HasConversion(w => string.Join(',', w),
-                ws => ws.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(wss => (HomeScreenWidget)int.Parse(wss)));
+                ws => ws.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(wss => (HomeScreenWidget)int.Parse(wss)))
+                .Metadata
+                .SetValueComparer(homeScreenWidgetsValueComparer);
 
             builder.Entity<AppUser>()
                 .HasIndex(u => u.UserName)

@@ -15,10 +15,10 @@ namespace eCampusGuard.Core.Entities
 		public int Id { get; set; }
 		public BitArray AttendingDays { get; set; }
 		public int SiblingsCount { get; set; }
-		public int AcademicYear { get; set; }
+		public string AcademicYear { get; set; }
 		public string LicenseImgPath { get; set; }
 		public string PhoneNumber { get; set; }
-		public int Status { get; set; } // Change to enum
+		public PermitApplicationStatusEnum Status { get; set; } = PermitApplicationStatusEnum.Pending;
 
 		public int UserId { get; set; }
         public virtual AppUser User { get; set; }
