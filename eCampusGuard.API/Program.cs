@@ -4,6 +4,7 @@ using eCampusGuard.API.Extensions;
 using eCampusGuard.Core.Entities;
 using eCampusGuard.Core.Interfaces;
 using eCampusGuard.MSSQL;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -48,9 +49,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
-
 app.UseAuthentication();
+
+app.UseAuthorization();
 
 app.MapControllers();
 

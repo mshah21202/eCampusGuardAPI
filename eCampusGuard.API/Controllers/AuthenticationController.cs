@@ -12,15 +12,15 @@ namespace eCampusGuard.API.Controllers
 {
 	public class AuthenticationController : BaseApiController
 	{
-		private readonly SQLDataContext _context;
+		private readonly IUnitOfWork _unitOfWork;
 		private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
 		private readonly ITokenService _tokenService;
 
 
-        public AuthenticationController(SQLDataContext context, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService)
+        public AuthenticationController(IUnitOfWork unitOfWork, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService)
 		{
-			_context = context;
+			_unitOfWork = unitOfWork;
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_tokenService = tokenService;
@@ -38,7 +38,7 @@ namespace eCampusGuard.API.Controllers
 
             // Try to authenticate
 
-            var user = await _context.AppUsers.FirstAsync(x => x.UserName == loginDto.Username);
+            var user = await _unitOfWork.AppUsers.FindAsync(x => x.UserName == loginDto.Username);
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
@@ -79,12 +79,17 @@ namespace eCampusGuard.API.Controllers
 
             // If nothing fails, return token
             if (result.Succeeded)
-
-                return Ok(new AuthResponseDto
+            {
+                var roleResult = await _userManager.AddToRoleAsync(user, "Member");
+                if (roleResult.Succeeded)
                 {
-                    Code = AuthResponseCode.RegisteredAndAuthenticated,
-                    Token = await _tokenService.CreateToken(user)
-                });
+                    return Ok(new AuthResponseDto
+                    {
+                        Code = AuthResponseCode.RegisteredAndAuthenticated,
+                        Token = await _tokenService.CreateToken(user)
+                    });
+                }
+            }              
 
 
             return BadRequest(new AuthResponseDto
@@ -95,7 +100,7 @@ namespace eCampusGuard.API.Controllers
 
         private async Task<bool> UserExists(string username)
         {
-            return await _context.AppUsers.AnyAsync(x => x.UserName == username);
+            return (await _unitOfWork.AppUsers.FindAsync(x => x.UserName == username)) != null;
         }
     }
 }

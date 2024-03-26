@@ -3,6 +3,7 @@ using System.Data;
 using System.Runtime.CompilerServices;
 using eCampusGuard.Core.Entities;
 using eCampusGuard.Core.Interfaces;
+using eCampusGuard.MSSQL.Repositories;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,7 +23,12 @@ namespace eCampusGuard.MSSQL
         public UnitOfWorkSQL(SQLDataContext context)
 		{
             _context = context;
-		}
+            AppUsers = new BaseRepository<AppUser>(_context);
+            AppRoles = new BaseRepository<AppRole>(_context);
+            AppUserRoles = new BaseRepository<AppUserRole>(_context);
+            Notifications = new BaseRepository<Notification>(_context);
+            PermitApplications = new BaseRepository<PermitApplication>(_context);
+        }
 
         public void BeginTransaction()
         {

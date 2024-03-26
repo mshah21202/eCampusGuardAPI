@@ -9,6 +9,8 @@ namespace eCampusGuard.Services.AutoMapper
     {
         public AutoMapperProfiles()
         {
+            CreateMap<VehicleDto, Vehicle>();
+
             CreateMap<Notification, NotificationDto>()
                 .ForMember(dest => dest.Body, opt => opt.MapFrom(src => src.Body))
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
@@ -23,14 +25,17 @@ namespace eCampusGuard.Services.AutoMapper
                 .ForMember(dest => dest.Vehicle, opt => opt.MapFrom(src => src.Vehicle))
                 .ForMember(dest => dest.Permit, opt => opt.MapFrom(src => src.Permit));
 
-            CreateMap<PermitApplicationDto, PermitApplication>();
+            CreateMap<PermitApplicationDto, PermitApplication>()
+                .ForMember(dest => dest.Vehicle, opt => opt.MapFrom(src => src.Vehicle))
+                .ForMember(dest => dest.Permit, opt => opt.MapFrom(src => src.Permit));
 
             CreateMap<Permit, PermitDto>()
                 .ForMember(dest => dest.Area, opt => opt.MapFrom(src => src.Area));
+            CreateMap<PermitDto, Permit>();
 
             CreateMap<Area, AreaDto>();
+            CreateMap<AreaDto, Area>();
 
-            CreateMap<Permit, PermitDto>();
         }
     }
 }

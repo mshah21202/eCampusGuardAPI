@@ -6,7 +6,7 @@ namespace eCampusGuard.Core.DTOs
 {
 	public class PermitApplicationDto
 	{
-        public BitArray AttendingDays { get; set; }
+        public IList<bool> AttendingDays { get; set; }
         public int SiblingsCount { get; set; }
         public string AcademicYear { get; set; }
         public string LicenseImgPath { get; set; }

@@ -5,8 +5,8 @@ namespace eCampusGuard.Core.Entities
 {
 	public class AppUserRole : IdentityUserRole<int>
 	{
-		public virtual AppUser AppUser { get; set; }
-		public virtual AppRole AppRole { get; set; }
+		public virtual AppUser User { get; set; }
+		public virtual AppRole Role { get; set; }
 	}
 }
 

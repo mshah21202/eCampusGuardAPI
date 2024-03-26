@@ -6,6 +6,7 @@ using eCampusGuard.Core.DTOs;
 using eCampusGuard.Core.Entities;
 using eCampusGuard.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace eCampusGuard.API.Controllers
@@ -14,12 +15,14 @@ namespace eCampusGuard.API.Controllers
 	public class PermitApplicationController : BaseApiController
 	{
         private readonly IUnitOfWork _unitOfWork;
+        private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
 
-        public PermitApplicationController(IUnitOfWork unitOfWork, IMapper mapper)
+        public PermitApplicationController(IUnitOfWork unitOfWork, IMapper mapper, UserManager<AppUser> userManager)
 		{
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _userManager = userManager;
 		}
 
         /// <summary>
@@ -27,13 +30,19 @@ namespace eCampusGuard.API.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet()]
-        public async Task<IEnumerable<PermitApplicationInfoDto>> GetPermitApplications()
+        public async Task<ActionResult<IEnumerable<PermitApplicationInfoDto>>> GetPermitApplications()
         {
-            var roles = await User.GetUserRolesAsync(_unitOfWork);
+            var user = await _unitOfWork.AppUsers.GetByIdAsync(User.GetUserId());
 
-            var applications = (await _unitOfWork.PermitApplications.FindAllAsync(p => roles.Any(r => r.Name == "Admin") ? true : p.UserId == User.GetUserId())).AsQueryable();
+            if (user == null)
+            {
+                return Unauthorized();
+            }
 
-            return applications.ProjectTo<PermitApplicationInfoDto>(_mapper.ConfigurationProvider);
+            var roles = await _userManager.GetRolesAsync(user);
+            var applications = (await _unitOfWork.PermitApplications.FindAllAsync(p => roles.Any(r => r == "Admin") ? true : p.UserId == User.GetUserId())).AsQueryable();
+
+            return Ok(applications.ProjectTo<PermitApplicationInfoDto>(_mapper.ConfigurationProvider).ToList());
         }
 
         /// <summary>
@@ -44,17 +53,24 @@ namespace eCampusGuard.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<PermitApplicationDto>> GetPermitApplication(int id)
         {
-            var application = await _unitOfWork.PermitApplications.GetByIdAsync(id);
+            var user = await _unitOfWork.AppUsers.GetByIdAsync(User.GetUserId());
 
-            var roles = await User.GetUserRolesAsync(_unitOfWork);
-
-            // If user is not admin and user is trying to get application of another user
-            if (!roles.Any(r => r.Name == "Admin") && application.UserId != User.GetUserId())
+            if (user == null)
             {
                 return Unauthorized();
             }
 
-            return _mapper.Map<PermitApplicationDto>(application);
+            var roles = await _userManager.GetRolesAsync(user);
+            var application = await _unitOfWork.PermitApplications.FindAsync(a => (a.UserId == User.GetUserId() || roles.Any(r => r == "Admin")) && (a.Id == id), includes: new[] { "Vehicle", "Permit" });
+
+
+            // If user is not admin and user is trying to get application of another user
+            if (application == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<PermitApplicationDto>(application));
         }
 
         /// <summary>
@@ -69,7 +85,9 @@ namespace eCampusGuard.API.Controllers
             {
                 PermitApplication application = _mapper.Map<PermitApplication>(permitApplicationDto);
 
-                application.UserId = User.GetUserId();
+                var user = await _unitOfWork.AppUsers.GetByIdAsync(User.GetUserId());
+                application.User = user;
+                application.Vehicle.User = user;
 
                 await _unitOfWork.PermitApplications.AddAsync(application);
                 if (await _unitOfWork.CompleteAsync() > 0)
@@ -85,7 +103,7 @@ namespace eCampusGuard.API.Controllers
                 return BadRequest(new ResponseDto
                 {
                     ResponseCode = ResponseCodeEnum.Failed,
-                    Message = e.ToString()
+                    Message = e
                 });
             }
             

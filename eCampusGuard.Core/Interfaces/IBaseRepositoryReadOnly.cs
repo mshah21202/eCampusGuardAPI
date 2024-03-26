@@ -10,9 +10,9 @@ namespace eCampusGuard.Core.Interfaces
 {
 	public interface IBaseRepositoryReadOnly<T> where T: class
 	{
-        T GetById(int id);
+        T? GetById(int id);
         IEnumerable<T> GetAll(string[] includes = null, Expression<Func<T, object>> orderBy = null, string orderByDirection = OrderBy.Ascending);
-        T Find(Expression<Func<T, bool>> criteria, string[] includes = null);
+        T? Find(Expression<Func<T, bool>> criteria, string[] includes = null);
         IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, string[] includes = null, Expression<Func<T, object>> orderBy = null,
          string orderByDirection = OrderBy.Ascending, int? take = 0, int? skip = 0);
     }

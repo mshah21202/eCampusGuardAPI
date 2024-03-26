@@ -12,10 +12,12 @@ namespace eCampusGuard.API.Extensions
             return int.Parse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value);
         }
 
-        public static async Task<IEnumerable<AppRole>> GetUserRolesAsync(this ClaimsPrincipal user, IUnitOfWork unitOfWork)
-        {
-            return (await unitOfWork.AppUsers.GetByIdAsync(GetUserId(user))).UserRoles.Select(x => x.AppRole);
-        }
+        //public static async Task<IList<AppRole>> GetUserRolesAsync(this ClaimsPrincipal user, IUnitOfWork unitOfWork)
+        //{
+        //    var id = GetUserId(user);
+        //    var userr = await unitOfWork.AppUsers.GetByIdAsync(id);
+        //    return userr.UserRoles.Select(x => x.Role).ToList();
+        //}
     }
 }
 

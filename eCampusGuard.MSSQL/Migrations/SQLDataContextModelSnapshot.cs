@@ -144,7 +144,7 @@ namespace eCampusGuard.MSSQL.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("AccessLogs");
+                    b.ToTable("AccessLogs", (string)null);
                 });
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.AppRole", b =>
@@ -161,7 +161,7 @@ namespace eCampusGuard.MSSQL.Migrations
 
                     b.Property<string>("HomeScreenWidgets")
                         .IsRequired()
-                        .HasColumnType("nvarchar");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
@@ -184,7 +184,10 @@ namespace eCampusGuard.MSSQL.Migrations
             modelBuilder.Entity("eCampusGuard.Core.Entities.AppUser", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
@@ -262,17 +265,7 @@ namespace eCampusGuard.MSSQL.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
-                    b.Property<int>("AppRoleId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("AppUserId")
-                        .HasColumnType("int");
-
                     b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("AppRoleId");
-
-                    b.HasIndex("AppUserId");
 
                     b.HasIndex("RoleId");
 
@@ -303,7 +296,7 @@ namespace eCampusGuard.MSSQL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Areas");
+                    b.ToTable("Areas", (string)null);
                 });
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.Notification", b =>
@@ -332,7 +325,7 @@ namespace eCampusGuard.MSSQL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notification");
+                    b.ToTable("Notification", (string)null);
                 });
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.Permit", b =>
@@ -366,7 +359,7 @@ namespace eCampusGuard.MSSQL.Migrations
 
                     b.HasIndex("AreaId");
 
-                    b.ToTable("Permits");
+                    b.ToTable("Permits", (string)null);
                 });
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.PermitApplication", b =>
@@ -415,7 +408,7 @@ namespace eCampusGuard.MSSQL.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("PermitApplications");
+                    b.ToTable("PermitApplications", (string)null);
                 });
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.UserPermit", b =>
@@ -441,7 +434,7 @@ namespace eCampusGuard.MSSQL.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("UserPermits");
+                    b.ToTable("UserPermits", (string)null);
                 });
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.Vehicle", b =>
@@ -486,7 +479,7 @@ namespace eCampusGuard.MSSQL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Vehicles");
+                    b.ToTable("Vehicles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -554,33 +547,21 @@ namespace eCampusGuard.MSSQL.Migrations
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.AppUserRole", b =>
                 {
-                    b.HasOne("eCampusGuard.Core.Entities.AppRole", "AppRole")
+                    b.HasOne("eCampusGuard.Core.Entities.AppRole", "Role")
                         .WithMany("UserRoles")
-                        .HasForeignKey("AppRoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("eCampusGuard.Core.Entities.AppUser", "AppUser")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("eCampusGuard.Core.Entities.AppRole", null)
-                        .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("eCampusGuard.Core.Entities.AppUser", null)
-                        .WithMany()
+                    b.HasOne("eCampusGuard.Core.Entities.AppUser", "User")
+                        .WithMany("UserRoles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("AppRole");
+                    b.Navigation("Role");
 
-                    b.Navigation("AppUser");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.Notification", b =>
