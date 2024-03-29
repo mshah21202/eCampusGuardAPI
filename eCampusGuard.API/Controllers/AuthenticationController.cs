@@ -41,7 +41,10 @@ namespace eCampusGuard.API.Controllers
             {
                 var user = await _unitOfWork.AppUsers.FindAsync(u => u.UserName == loginDto.Username);
 
+                var user = await _unitOfWork.AppUsers.FindAsync(x => x.UserName == loginDto.Username);
+
                 var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
+
 
                 if (result.Succeeded) return Ok(new AuthResponseDto
                 {
@@ -85,19 +88,19 @@ namespace eCampusGuard.API.Controllers
                     UserName = registerDto.Username,
                     Name = registerDto.Name
                 };
-
-
                 var result = await _userManager.CreateAsync(user, registerDto.Password);
 
-                // If nothing fails, return token
-                if (result.Succeeded)
-                {
-                    return Ok(new AuthResponseDto
-                    {
-                        Code = AuthResponseCode.RegisteredAndAuthenticated,
-                        Token = await _tokenService.CreateToken(user)
-                    });
-                }
+              // If nothing fails, return token
+              if (result.Succeeded)
+              {
+                  var roleResult = await _userManager.AddToRoleAsync(user, "Member");
+                  if (roleResult.Succeeded)
+                      return Ok(new AuthResponseDto
+                      {
+                          Code = AuthResponseCode.RegisteredAndAuthenticated,
+                          Token = await _tokenService.CreateToken(user)
+                      });
+              }
             }
             catch (Exception e)
             {
@@ -108,7 +111,6 @@ namespace eCampusGuard.API.Controllers
                 });
             }
 
-
             return BadRequest(new AuthResponseDto
             {
                 Code = AuthResponseCode.Other
@@ -117,9 +119,7 @@ namespace eCampusGuard.API.Controllers
 
         private async Task<bool> UserExists(string username)
         {
-            var user = await _unitOfWork.AppUsers.FindAsync(x => x.UserName == username);
-
-            return user != null;
+            return (await _unitOfWork.AppUsers.FindAsync(x => x.UserName == username)) != null;
         }
     }
 }

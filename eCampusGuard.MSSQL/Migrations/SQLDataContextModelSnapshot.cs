@@ -159,6 +159,10 @@ namespace eCampusGuard.MSSQL.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("HomeScreenWidgets")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -180,7 +184,10 @@ namespace eCampusGuard.MSSQL.Migrations
             modelBuilder.Entity("eCampusGuard.Core.Entities.AppUser", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
@@ -258,17 +265,7 @@ namespace eCampusGuard.MSSQL.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
-                    b.Property<int>("AppRoleId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("AppUserId")
-                        .HasColumnType("int");
-
                     b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("AppRoleId");
-
-                    b.HasIndex("AppUserId");
 
                     b.HasIndex("RoleId");
 
@@ -300,6 +297,35 @@ namespace eCampusGuard.MSSQL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Areas");
+                });
+
+            modelBuilder.Entity("eCampusGuard.Core.Entities.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notification");
                 });
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.Permit", b =>
@@ -344,8 +370,9 @@ namespace eCampusGuard.MSSQL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AcademicYear")
-                        .HasColumnType("int");
+                    b.Property<string>("AcademicYear")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("AttendingDays")
                         .HasColumnType("int");
@@ -520,33 +547,32 @@ namespace eCampusGuard.MSSQL.Migrations
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.AppUserRole", b =>
                 {
-                    b.HasOne("eCampusGuard.Core.Entities.AppRole", "AppRole")
+                    b.HasOne("eCampusGuard.Core.Entities.AppRole", "Role")
                         .WithMany("UserRoles")
-                        .HasForeignKey("AppRoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("eCampusGuard.Core.Entities.AppUser", "AppUser")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("eCampusGuard.Core.Entities.AppRole", null)
-                        .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("eCampusGuard.Core.Entities.AppUser", null)
-                        .WithMany()
+                    b.HasOne("eCampusGuard.Core.Entities.AppUser", "User")
+                        .WithMany("UserRoles")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("AppRole");
+                    b.Navigation("Role");
 
-                    b.Navigation("AppUser");
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("eCampusGuard.Core.Entities.Notification", b =>
+                {
+                    b.HasOne("eCampusGuard.Core.Entities.AppUser", "User")
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.Permit", b =>
@@ -633,6 +659,8 @@ namespace eCampusGuard.MSSQL.Migrations
             modelBuilder.Entity("eCampusGuard.Core.Entities.AppUser", b =>
                 {
                     b.Navigation("AccessLogs");
+
+                    b.Navigation("Notifications");
 
                     b.Navigation("PermitApplications");
 

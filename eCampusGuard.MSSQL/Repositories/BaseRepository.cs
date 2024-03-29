@@ -50,7 +50,7 @@ namespace eCampusGuard.MSSQL.Repositories
             return await query.ToListAsync();
         }
 
-        public T GetById(int id)
+        public T? GetById(int id)
         {
             return _context.Set<T>().Find(id);
         }
@@ -60,7 +60,7 @@ namespace eCampusGuard.MSSQL.Repositories
             return await _context.Set<T>().FindAsync(id);
         }
 
-        public T Find(Expression<Func<T, bool>> criteria, string[] includes = null)
+        public T? Find(Expression<Func<T, bool>> criteria, string[] includes = null)
         {
             IQueryable<T> query = _context.Set<T>();
 
@@ -96,7 +96,7 @@ namespace eCampusGuard.MSSQL.Repositories
             return query.ToList();
         }
 
-        public async Task<T> FindAsync(Expression<Func<T, bool>> criteria, bool Tracking = false, string[] includes = null)
+        public async Task<T?> FindAsync(Expression<Func<T, bool>> criteria, bool Tracking = false, string[] includes = null)
         {
             IQueryable<T> query = _context.Set<T>();
             if (Tracking)

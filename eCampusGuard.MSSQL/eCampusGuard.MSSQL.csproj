@@ -10,14 +10,18 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.16" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="7.0.16" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.16" />
+    <PackageReference Include="Laraue.EfCoreTriggers.Common" Version="7.0.8" />
+    <PackageReference Include="Laraue.EfCoreTriggers.SqlServer" Version="7.0.8" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\eCampusGuard.Core\eCampusGuard.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Repositories\" />
+    <None Remove="Migrations\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Repositories\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 </Project>

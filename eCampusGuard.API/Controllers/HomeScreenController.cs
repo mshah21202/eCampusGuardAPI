@@ -8,6 +8,7 @@ using eCampusGuard.Core.Entities;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace eCampusGuard.API.Controllers
 {
@@ -16,27 +17,40 @@ namespace eCampusGuard.API.Controllers
 	{
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IMapper _mapper;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly RoleManager<AppRole> _roleManager;
 
-		public HomeScreenController(IUnitOfWork unitOfWork, IMapper mapper)
+
+
+        public HomeScreenController(IUnitOfWork unitOfWork, IMapper mapper, UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
 		{
 			_unitOfWork = unitOfWork;
 			_mapper = mapper;
-		}
+            _userManager = userManager;
+            _roleManager = roleManager;
+        }
 
-		[HttpGet()]
+        [HttpGet()]
 		public async Task<ActionResult<HomeScreenDto>> Home()
 		{
-			var roles = await User.GetUserRolesAsync(_unitOfWork);
-			var user = await _unitOfWork.AppUsers.GetByIdAsync(User.GetUserId());
+            var user = await _unitOfWork.AppUsers.GetByIdAsync(User.GetUserId());
 
-			HomeScreenDto result = new HomeScreenDto();
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            HomeScreenDto result = new HomeScreenDto();
 
 			HashSet<HomeScreenWidget> widgets = new HashSet<HomeScreenWidget>();
 
 			// If the user is NOT a normal user (is admin, gatestaff, or superadmin) then add all the widgets
-			if (!roles.Any(r => r.Name == "Member"))
+			if (!roles.Any(r => r == "Member"))
 			{
-                foreach (AppRole role in roles)
+				var rolesEntities = user.UserRoles.Select(ur => ur.Role);
+                foreach (AppRole role in rolesEntities)
                 {
                     foreach (HomeScreenWidget widget in role.HomeScreenWidgets)
                     {

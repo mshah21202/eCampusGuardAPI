@@ -6,9 +6,9 @@ namespace eCampusGuard.Core.Interfaces
 {
     public interface IBaseRepository<T> : IBaseRepositoryReadOnly<T> where T : class
     {
-        Task<T> GetByIdAsync(int id);
+        Task<T?> GetByIdAsync(int id);
         Task<IEnumerable<T>> GetAllAsync(string[] includes = null, Expression<Func<T, object>> orderBy = null, string orderByDirection = OrderBy.Ascending);
-        Task<T> FindAsync(Expression<Func<T, bool>> criteria, bool Tracking = false, string[] includes = null);
+        Task<T?> FindAsync(Expression<Func<T, bool>> criteria, bool Tracking = false, string[] includes = null);
         //IEnumerable<T> FindAll(Expression<Func<T, bool>> criteria, int? take=0, int? skip = 0);
 
         //Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> criteria, int? skip = 0, int? take = 0);

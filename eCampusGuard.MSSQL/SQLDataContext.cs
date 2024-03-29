@@ -2,9 +2,11 @@
 using System.Collections;
 using System.Reflection.Emit;
 using eCampusGuard.Core.Entities;
+using Laraue.EfCoreTriggers.Common.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace eCampusGuard.MSSQL
 {
@@ -28,10 +30,9 @@ namespace eCampusGuard.MSSQL
 
 		public SQLDataContext(DbContextOptions<SQLDataContext> options) : base(options)
 		{
-			
 		}
 
-        private int getIntFromBitArray(BitArray bitArray)
+        private static int GetIntFromBitArray(IList<bool> bitArray)
         {
             int value = 0;
 
@@ -44,34 +45,76 @@ namespace eCampusGuard.MSSQL
             return value;
         }
 
+        private static IList<bool> GetBitArrayFromInt(int value)
+        {
+            var result = new List<bool> { false, false, false, false, false };
+            var j = 0;
+            for (int i = result.Count - 1; i > 0; i--)
+            {
+                var weight = Convert.ToInt16(Math.Pow(2, i));
+
+                if (value >= weight)
+                {
+                    value -= weight;
+                    result[j] = true;
+                }
+
+                j++;
+            }
+
+            return result;
+        }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            base.OnModelCreating(builder);
 
+            //builder.Entity<AppUser>().Property(u => u.Id).ValueGeneratedNever();
 
-            builder.Entity<AppUser>().Property(u => u.Id).ValueGeneratedNever();
+            var boolArrayComparer = new ValueComparer<IList<bool>>(
+                (c1, c2) => c1.SequenceEqual(c2),
+                c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                c => c.ToArray());
 
-            builder.Entity<Permit>().Property(p => p.Days).HasColumnType("int").HasConversion(v => getIntFromBitArray(v), v => new BitArray(v, false));
-			builder.Entity<PermitApplication>().Property(p => p.AttendingDays).HasColumnType("int").HasConversion(v => getIntFromBitArray(v), v => new BitArray(v, false));
+            builder.Entity<Permit>()
+                .Property(p => p.Days)
+                .HasColumnType("int")
+                .HasConversion(v => GetIntFromBitArray(v), v => GetBitArrayFromInt(v))
+                .Metadata
+                .SetValueComparer(boolArrayComparer);
+
+			builder.Entity<PermitApplication>()
+                .Property(p => p.AttendingDays)
+                .HasColumnType("int")
+                .HasConversion(v => GetIntFromBitArray(v), v => GetBitArrayFromInt(v))
+                .Metadata
+                .SetValueComparer(boolArrayComparer);
 
             builder.Entity<AppUser>()
                 .HasMany(u => u.UserRoles)
-                .WithOne(ur => ur.AppUser)
+                .WithOne(ur => ur.User)
                 .HasForeignKey(ur => ur.UserId)
-                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
             builder.Entity<AppRole>()
                 .HasMany(r => r.UserRoles)
-                .WithOne(ur => ur.AppRole)
+                .WithOne(ur => ur.Role)
                 .HasForeignKey(ur => ur.RoleId)
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
+            var homeScreenWidgetsValueComparer = new ValueComparer<IEnumerable<HomeScreenWidget>>(
+                (c1, c2) => c1.SequenceEqual(c2),
+                c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                c => c.ToHashSet());
+
             builder.Entity<AppRole>()
                 .Property(r => r.HomeScreenWidgets)
-                .HasColumnType("varchar")
-                .HasConversion(w => string.Join(',', w),
-                ws => ws.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(wss => (HomeScreenWidget)int.Parse(wss)));
+                .HasColumnType("nvarchar(max)")
+                .HasConversion(w => string.Join(",", w.Select(x => (int)x)),
+                ws => ws.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(wss => (HomeScreenWidget)int.Parse(wss)))
+                .Metadata
+                .SetValueComparer(homeScreenWidgetsValueComparer);
 
             builder.Entity<AppUser>()
                 .HasIndex(u => u.UserName)
@@ -116,9 +159,14 @@ namespace eCampusGuard.MSSQL
                 .WithMany(u => u.PermitApplications)
                 .HasForeignKey(pa => pa.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
-           
 
-            base.OnModelCreating(builder);
+            builder.Entity<UserPermit>()
+                .AfterInsert(trigger => trigger
+                .Action(action => action
+                    .Condition(ur => ur.IsPermitValid())
+                    .ExecuteRawSql("UPDATE dbo.Areas SET Occupied = (SELECT COUNT(*) FROM dbo.UserPermits WHERE PermitId = {0} AND [Status] = 0) WHERE dbo.Areas.Id = {0}", ur => ur.PermitId)
+                   )
+                );
         }
     }
 }
