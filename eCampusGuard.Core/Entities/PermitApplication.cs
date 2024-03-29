@@ -9,7 +9,8 @@ namespace eCampusGuard.Core.Entities
 		{
 			Pending = 0,
 			AwaitingPayment = 1,
-			Denied = 2
+			Denied = 2,
+			Paid = 3
 		}
 
 		public int Id { get; set; }

@@ -79,15 +79,38 @@ namespace eCampusGuard.API.Controllers
         /// <param name="permitApplicationDto"></param>
         /// <returns></returns>
         [HttpPost("apply")]
-        public async Task<ActionResult<ResponseDto>> Apply(PermitApplicationDto permitApplicationDto)
+        public async Task<ActionResult<ResponseDto>> Apply(CreatePermitApplicationDto permitApplicationDto)
         {
             try
             {
                 PermitApplication application = _mapper.Map<PermitApplication>(permitApplicationDto);
 
                 var user = await _unitOfWork.AppUsers.GetByIdAsync(User.GetUserId());
+
+                if (user == null)
+                {
+                    return NotFound(new ResponseDto
+                    {
+                        ResponseCode = ResponseCodeEnum.Failed,
+                        Message = "Could not find user"
+                    });
+                }
+
                 application.User = user;
                 application.Vehicle.User = user;
+
+                var permit = await _unitOfWork.Permits.GetByIdAsync(application.PermitId);
+
+                if (permit == null)
+                {
+                    return NotFound(new ResponseDto
+                    {
+                        ResponseCode = ResponseCodeEnum.Failed,
+                        Message = "Could not find permit"
+                    });
+                }
+
+                application.Permit = permit;
 
                 await _unitOfWork.PermitApplications.AddAsync(application);
                 if (await _unitOfWork.CompleteAsync() > 0)

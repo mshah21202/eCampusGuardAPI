@@ -94,7 +94,6 @@ namespace eCampusGuard.MSSQL
                 .HasMany(u => u.UserRoles)
                 .WithOne(ur => ur.User)
                 .HasForeignKey(ur => ur.UserId)
-                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
             builder.Entity<AppRole>()

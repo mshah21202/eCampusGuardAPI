@@ -10,7 +10,7 @@ namespace eCampusGuard.Core.Interfaces
         IBaseRepository<AppUserRole> AppUserRoles { get; }
         IBaseRepository<Notification> Notifications { get; }
         IBaseRepository<PermitApplication> PermitApplications { get; }
-        //IBaseRepository<Attendance> Attendances { get; }
+        IBaseRepository<Permit> Permits { get; }
 
         int Complete();
         Task<int> CompleteAsync();
