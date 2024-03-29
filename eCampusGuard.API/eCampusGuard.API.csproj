@@ -19,6 +19,8 @@
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.16" />
+		<PackageReference Include="Laraue.EfCoreTriggers.SqlServer" Version="7.0.8" />
+		<PackageReference Include="Laraue.EfCoreTriggers.Common" Version="7.0.8" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Remove="Controllers\" />

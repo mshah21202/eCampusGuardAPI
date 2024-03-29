@@ -3,6 +3,7 @@ using eCampusGuard.Core.Interfaces;
 using eCampusGuard.MSSQL;
 using eCampusGuard.Services.AutoMapper;
 using eCampusGuard.Services.TokenService;
+using Laraue.EfCoreTriggers.SqlServer.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace eCampusGuard.API.Extensions
@@ -14,7 +15,7 @@ namespace eCampusGuard.API.Extensions
             services.AddDbContext<SQLDataContext>(options =>
                 options.UseLazyLoadingProxies().UseSqlServer(
                     config.GetConnectionString("SQLConnection"), b => b.MigrationsAssembly(typeof(SQLDataContext).Assembly.FullName)
-                )
+                ).UseSqlServerTriggers()
             );
 
             services.AddScoped<ITokenService, TokenService>();
