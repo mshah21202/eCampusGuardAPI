@@ -37,16 +37,30 @@ namespace eCampusGuard.API.Controllers
             });
 
             // Try to authenticate
-
-            var user = await _unitOfWork.AppUsers.FindAsync(x => x.UserName == loginDto.Username);
-
-            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
-
-            if (result.Succeeded) return Ok(new AuthResponseDto
+            try
             {
-                Code = AuthResponseCode.Authenticated,
-                Token = await _tokenService.CreateToken(user)
-            });
+                var user = await _unitOfWork.AppUsers.FindAsync(u => u.UserName == loginDto.Username);
+
+                var user = await _unitOfWork.AppUsers.FindAsync(x => x.UserName == loginDto.Username);
+
+                var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
+
+
+                if (result.Succeeded) return Ok(new AuthResponseDto
+                {
+                    Code = AuthResponseCode.Authenticated,
+                    Token = await _tokenService.CreateToken(user)
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new AuthResponseDto
+                {
+                    Code = AuthResponseCode.Other,
+                    Error = e.ToString()
+                });
+            }
+            
 
             return BadRequest(new AuthResponseDto
             {
@@ -60,37 +74,42 @@ namespace eCampusGuard.API.Controllers
             // If user already exists, return error
             if (await UserExists(registerDto.Username))
             {
-                return new AuthResponseDto
+                return BadRequest(new AuthResponseDto
                 {
                     Code = AuthResponseCode.AlreadyRegistered
-                };
+                });
             }
 
-            // Create user
-
-            var user = new AppUser
+            try
             {
-                UserName = registerDto.Username,
-                Name = registerDto.Name
-            };
-
-
-            var result = await _userManager.CreateAsync(user, registerDto.Password);
-
-            // If nothing fails, return token
-            if (result.Succeeded)
-            {
-                var roleResult = await _userManager.AddToRoleAsync(user, "Member");
-                if (roleResult.Succeeded)
+                // Create user
+                var user = new AppUser
                 {
-                    return Ok(new AuthResponseDto
-                    {
-                        Code = AuthResponseCode.RegisteredAndAuthenticated,
-                        Token = await _tokenService.CreateToken(user)
-                    });
-                }
-            }              
+                    UserName = registerDto.Username,
+                    Name = registerDto.Name
+                };
+                var result = await _userManager.CreateAsync(user, registerDto.Password);
 
+              // If nothing fails, return token
+              if (result.Succeeded)
+              {
+                  var roleResult = await _userManager.AddToRoleAsync(user, "Member");
+                  if (roleResult.Succeeded)
+                      return Ok(new AuthResponseDto
+                      {
+                          Code = AuthResponseCode.RegisteredAndAuthenticated,
+                          Token = await _tokenService.CreateToken(user)
+                      });
+              }
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new AuthResponseDto
+                {
+                    Code = AuthResponseCode.Other,
+                    Error = e.ToString()
+                });
+            }
 
             return BadRequest(new AuthResponseDto
             {
