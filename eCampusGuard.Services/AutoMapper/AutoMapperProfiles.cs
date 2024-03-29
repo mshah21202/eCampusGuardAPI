@@ -40,6 +40,10 @@ namespace eCampusGuard.Services.AutoMapper
             CreateMap<Area, AreaDto>();
             CreateMap<AreaDto, Area>();
 
+            CreateMap<AccessLog, AccessLogDto>()
+                .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src => src.Timestamp))
+                .ForMember(dest => dest.LicensePlate, opt => opt.MapFrom(src => src.Vehicle.PlateNumber))
+                .ForMember(dest => dest.LogType, opt => opt.MapFrom(src => src.Type));
         }
     }
 }

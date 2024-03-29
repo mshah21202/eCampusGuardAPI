@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Reflection.Emit;
 using eCampusGuard.Core.Entities;
+using Laraue.EfCoreTriggers.Common.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +30,6 @@ namespace eCampusGuard.MSSQL
 
 		public SQLDataContext(DbContextOptions<SQLDataContext> options) : base(options)
 		{
-			
 		}
 
         private static int GetIntFromBitArray(IList<bool> bitArray)
@@ -159,8 +159,14 @@ namespace eCampusGuard.MSSQL
                 .WithMany(u => u.PermitApplications)
                 .HasForeignKey(pa => pa.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
-           
 
+            builder.Entity<UserPermit>()
+                .AfterInsert(trigger => trigger
+                .Action(action => action
+                    .Condition(ur => ur.IsPermitValid())
+                    .ExecuteRawSql("UPDATE dbo.Areas SET Occupied = (SELECT COUNT(*) FROM dbo.UserPermits WHERE PermitId = {0} AND [Status] = 0) WHERE dbo.Areas.Id = {0}", ur => ur.PermitId)
+                   )
+                );
         }
     }
 }
