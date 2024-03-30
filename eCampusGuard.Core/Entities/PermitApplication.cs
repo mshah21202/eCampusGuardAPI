@@ -13,10 +13,18 @@ namespace eCampusGuard.Core.Entities
 			Paid = 3
 		}
 
-		public int Id { get; set; }
+		public enum AcademicYearEnum
+		{
+			FirstYear = 0,
+            SecondYear = 1,
+            ThirdYear = 2,
+            FourthPlusYear = 3,
+        }
+
+        public int Id { get; set; }
 		public IList<bool> AttendingDays { get; set; }
 		public int SiblingsCount { get; set; }
-		public string AcademicYear { get; set; }
+		public AcademicYearEnum AcademicYear { get; set; }
 		public string LicenseImgPath { get; set; }
 		public string PhoneNumber { get; set; }
 		public PermitApplicationStatusEnum Status { get; set; } = PermitApplicationStatusEnum.Pending;
