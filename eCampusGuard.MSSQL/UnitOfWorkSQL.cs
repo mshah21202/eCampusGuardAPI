@@ -20,6 +20,7 @@ namespace eCampusGuard.MSSQL
         public IBaseRepository<Permit> Permits { get; }
         public IBaseRepository<Area> Areas { get; }
         public IBaseRepository<AccessLog> AccessLogs { get; }
+        public IBaseRepository<UserPermit> UserPermits { get; }
 
 
 
@@ -34,6 +35,7 @@ namespace eCampusGuard.MSSQL
             Permits = new BaseRepository<Permit>(_context);
             Areas = new BaseRepository<Area>(_context);
             AccessLogs = new BaseRepository<AccessLog>(_context);
+            UserPermits = new BaseRepository<UserPermit>(_context);
         }
 
         public void BeginTransaction()
