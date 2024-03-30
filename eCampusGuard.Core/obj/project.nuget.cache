@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "AqR/kD5QKsqBsM61+k4J9N25m7mDtNv6bsqKJS2vtFMaD0zMJsh0BXVWzEXwaFuPplS5ZpAKI+dEwjgZkPlwJw==",
+  "dgSpecHash": "Ja04GuELrCXFEK1Qsc2RrG4MmXpn2gIPkouaEuGNQXkWNl4LA8Ww09Ej0jILHrC3D0MoEBsd5tpj4PV7LJ77dg==",
   "success": true,
   "projectFilePath": "/Users/mohamadshahin/Development/eCampusGuardAPI/eCampusGuard.Core/eCampusGuard.Core.csproj",
   "expectedPackageFiles": [
@@ -25,9 +25,7 @@
     "/Users/mohamadshahin/.nuget/packages/microsoft.openapi/1.2.3/microsoft.openapi.1.2.3.nupkg.sha512",
     "/Users/mohamadshahin/.nuget/packages/swashbuckle.aspnetcore.annotations/6.5.0/swashbuckle.aspnetcore.annotations.6.5.0.nupkg.sha512",
     "/Users/mohamadshahin/.nuget/packages/swashbuckle.aspnetcore.swagger/6.5.0/swashbuckle.aspnetcore.swagger.6.5.0.nupkg.sha512",
-    "/Users/mohamadshahin/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.5.0/swashbuckle.aspnetcore.swaggergen.6.5.0.nupkg.sha512",
-    "/Users/mohamadshahin/.nuget/packages/microsoft.netcore.app.ref/7.0.14/microsoft.netcore.app.ref.7.0.14.nupkg.sha512",
-    "/Users/mohamadshahin/.nuget/packages/microsoft.aspnetcore.app.ref/7.0.14/microsoft.aspnetcore.app.ref.7.0.14.nupkg.sha512"
+    "/Users/mohamadshahin/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.5.0/swashbuckle.aspnetcore.swaggergen.6.5.0.nupkg.sha512"
   ],
   "logs": []
 }
