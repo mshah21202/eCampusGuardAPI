@@ -41,7 +41,10 @@ namespace eCampusGuard.API.Controllers
             {
                 var user = await _unitOfWork.AppUsers.FindAsync(u => u.UserName == loginDto.Username);
 
-                var user = await _unitOfWork.AppUsers.FindAsync(x => x.UserName == loginDto.Username);
+                if (user == null)
+                {
+                    return NotFound();
+                }
 
                 var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
