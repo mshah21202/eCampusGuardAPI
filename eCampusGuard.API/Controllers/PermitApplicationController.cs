@@ -2,6 +2,7 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using eCampusGuard.API.Extensions;
+using eCampusGuard.API.Helpers;
 using eCampusGuard.Core.DTOs;
 using eCampusGuard.Core.Entities;
 using eCampusGuard.Core.Interfaces;
@@ -30,7 +31,7 @@ namespace eCampusGuard.API.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet()]
-        public async Task<ActionResult<IEnumerable<PermitApplicationInfoDto>>> GetPermitApplications()
+        public async Task<ActionResult<IEnumerable<PermitApplicationInfoDto>>> GetPermitApplications([FromQuery]PermitApplicationParams applicationParams)
         {
             var user = await _unitOfWork.AppUsers.GetByIdAsync(User.GetUserId());
 
@@ -40,7 +41,12 @@ namespace eCampusGuard.API.Controllers
             }
 
             var roles = await _userManager.GetRolesAsync(user);
-            var applications = (await _unitOfWork.PermitApplications.FindAllAsync(p => roles.Any(r => r == "Admin") ? true : p.UserId == User.GetUserId())).AsQueryable();
+            var applications = (await _unitOfWork.PermitApplications.FindAllAsync(
+                criteria: p => applicationParams.Criteria(p, roles.Any(r => r == "Admin"), user),
+                orderBy: p => applicationParams.OrderByMember(p),
+                orderByDirection: applicationParams.OrderByDirection,
+                skip: (applicationParams.PageNumber - 1) * applicationParams.PageSize,
+                take: applicationParams.PageSize)).AsQueryable();
 
             return Ok(applications.ProjectTo<PermitApplicationInfoDto>(_mapper.ConfigurationProvider).ToList());
         }
