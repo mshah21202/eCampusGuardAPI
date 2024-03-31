@@ -3,9 +3,7 @@ namespace eCampusGuard.Core.DTOs
 {
 	public class TransferRequestDto
 	{
-		public TransferRequestDto()
-		{
-		}
+		public int StudentId { get; set; }
 	}
 }
 

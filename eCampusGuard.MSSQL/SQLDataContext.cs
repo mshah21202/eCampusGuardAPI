@@ -22,8 +22,10 @@ namespace eCampusGuard.MSSQL
 		public DbSet<UserPermit> UserPermits { get; set; }
 		public DbSet<PermitApplication> PermitApplications { get; set; }
 		public DbSet<AccessLog> AccessLogs { get; set; }
+		public DbSet<TransferRequest> TransferRequests { get; set; }
+		public DbSet<UpdateDetailsRequest> UpdateDetailsRequests { get; set; }
 
-		public SQLDataContext()
+        public SQLDataContext()
 		{
 
 		}

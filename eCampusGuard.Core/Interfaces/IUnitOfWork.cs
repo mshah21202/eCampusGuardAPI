@@ -14,6 +14,8 @@ namespace eCampusGuard.Core.Interfaces
         IBaseRepository<Area> Areas { get; }
         IBaseRepository<AccessLog> AccessLogs { get; }
         IBaseRepository<UserPermit> UserPermits { get; }
+        IBaseRepository<TransferRequest> TransferRequests { get; }
+        IBaseRepository<UpdateDetailsRequest> UpdateDetailsRequests { get; }
 
         int Complete();
         Task<int> CompleteAsync();

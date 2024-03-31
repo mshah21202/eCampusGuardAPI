@@ -24,6 +24,10 @@ namespace eCampusGuard.API.Controllers
             _userManager = userManager;
         }
 
+        /// <summary>
+        /// Gets all permits
+        /// </summary>
+        /// <returns></returns>
 		[HttpGet()]
 		public async Task<ActionResult<IEnumerable<PermitDto>>> GetPermits()
 		{
@@ -32,6 +36,11 @@ namespace eCampusGuard.API.Controllers
             return Ok(permits.ProjectTo<PermitDto>(_mapper.ConfigurationProvider));
 		}
 
+        /// <summary>
+        /// Gets a permit
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<PermitDto>> GetPermit(int id)
         {
