@@ -117,11 +117,6 @@ namespace eCampusGuard.MSSQL.Repositories
             if (includes != null)
                 foreach (var incluse in includes)
                     query = query.Include(incluse);
-            if (take > 0)
-                query = query.Take(take.Value);
-
-            if (skip > 0)
-                query = query.Skip(skip.Value);
 
             if (orderBy != null)
             {
@@ -130,6 +125,12 @@ namespace eCampusGuard.MSSQL.Repositories
                 else
                     query = query.OrderByDescending(orderBy);
             }
+
+            if (skip > 0)
+                query = query.Skip(skip.Value);
+
+            if (take > 0)
+                query = query.Take(take.Value);
 
             return await query.ToListAsync();
         }
@@ -202,6 +203,31 @@ namespace eCampusGuard.MSSQL.Repositories
         public async Task<int> CountAsync(Expression<Func<T, bool>> criteria)
         {
             return await _context.Set<T>().CountAsync(criteria);
+        }
+
+        public async Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> criteria, bool Tracking = false, string[] includes = null)
+        {
+            IQueryable<T> query = _context.Set<T>();
+            if (Tracking)
+            {
+                query = query.AsNoTracking();
+            }
+            if (includes != null)
+                foreach (var incluse in includes)
+                    query = query.Include(incluse);
+
+            return await query.FirstOrDefaultAsync(criteria);
+        }
+
+        public T? FirstOrDefault(Expression<Func<T, bool>> criteria, string[] includes = null)
+        {
+            IQueryable<T> query = _context.Set<T>();
+
+            if (includes != null)
+                foreach (var incluse in includes)
+                    query = query.Include(incluse);
+
+            return query.FirstOrDefault(criteria);
         }
     }
 }

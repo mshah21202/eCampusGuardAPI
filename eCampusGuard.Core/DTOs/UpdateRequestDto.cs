@@ -1,10 +1,14 @@
 ﻿using System;
+using eCampusGuard.Core.Entities;
+
 namespace eCampusGuard.Core.DTOs
 {
 	public class UpdateRequestDto
 	{
-        public string LicenseImgPath { get; set; }
-        public VehicleDto Vehicle { get; set; }
-    }
+		public UpdateRequestStatus Status { get; set; }
+		public UserPermitDto UserPermit { get; set; }
+		public PermitDto NewPermit { get; set; }
+		public VehicleDto UpdatedVehicle { get; set; }
+	}
 }
 

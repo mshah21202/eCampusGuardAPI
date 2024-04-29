@@ -1,6 +1,8 @@
 ﻿using System;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using eCampusGuard.API.Extensions;
+using eCampusGuard.API.Helpers;
 using eCampusGuard.Core.DTOs;
 using eCampusGuard.Core.Entities;
 using eCampusGuard.Core.Interfaces;
@@ -29,9 +31,19 @@ namespace eCampusGuard.API.Controllers
         /// </summary>
         /// <returns></returns>
 		[HttpGet()]
-		public async Task<ActionResult<IEnumerable<PermitDto>>> GetPermits()
+		public async Task<ActionResult<IEnumerable<PermitDto>>> GetPermits([FromQuery]PaginationParams paginationParams)
 		{
-            var permits = (await _unitOfWork.Permits.GetAllAsync()).AsQueryable();
+            var permits = (await _unitOfWork.Permits.FindAllAsync(
+                (p) => true,
+                null,
+                null,
+                "ASC",
+                paginationParams.PageSize,
+                paginationParams.PageSize * paginationParams.PageNumber)).AsQueryable();
+
+            var totalItems = await _unitOfWork.Permits.CountAsync();
+
+            Response.AddPaginationHeader(paginationParams.PageNumber, paginationParams.PageSize, totalItems, (int)Math.Ceiling(totalItems / (double)paginationParams.PageSize));
 
             return Ok(permits.ProjectTo<PermitDto>(_mapper.ConfigurationProvider));
 		}
@@ -59,7 +71,7 @@ namespace eCampusGuard.API.Controllers
                 {
                     return NotFound(new ResponseDto
                     {
-                        ResponseCode = ResponseCodeEnum.Failed,
+                        ResponseCode = ResponseCode.Failed,
                         Message = "Could not find area"
                     });
                 }
@@ -79,7 +91,7 @@ namespace eCampusGuard.API.Controllers
                 {
                     return Ok(new ResponseDto
                     {
-                        ResponseCode = ResponseCodeEnum.Success,
+                        ResponseCode = ResponseCode.Success,
                         Message = "Permit created successfully"
                     });
                 }
@@ -88,7 +100,7 @@ namespace eCampusGuard.API.Controllers
             {
                 return BadRequest(new ResponseDto
                 {
-                    ResponseCode = ResponseCodeEnum.Failed,
+                    ResponseCode = ResponseCode.Failed,
                     Message = e.ToString()
                 });
             }
@@ -96,7 +108,7 @@ namespace eCampusGuard.API.Controllers
 
             return BadRequest(new ResponseDto
             {
-                ResponseCode = ResponseCodeEnum.Failed,
+                ResponseCode = ResponseCode.Failed,
                 Message = "Something went wrong"
             });
 		}
@@ -113,7 +125,7 @@ namespace eCampusGuard.API.Controllers
                 {
                     return NotFound(new ResponseDto
                     {
-                        ResponseCode = ResponseCodeEnum.Failed,
+                        ResponseCode = ResponseCode.Failed,
                         Message = "Could not find area"
                     });
                 }
@@ -134,7 +146,7 @@ namespace eCampusGuard.API.Controllers
                 {
                     return Ok(new ResponseDto
                     {
-                        ResponseCode = ResponseCodeEnum.Success,
+                        ResponseCode = ResponseCode.Success,
                         Message = "Permit updated successfully"
                     });
                 }
@@ -143,7 +155,7 @@ namespace eCampusGuard.API.Controllers
             {
                 return BadRequest(new ResponseDto
                 {
-                    ResponseCode = ResponseCodeEnum.Failed,
+                    ResponseCode = ResponseCode.Failed,
                     Message = e.ToString()
                 });
             }
@@ -151,7 +163,7 @@ namespace eCampusGuard.API.Controllers
 
             return BadRequest(new ResponseDto
             {
-                ResponseCode = ResponseCodeEnum.Failed,
+                ResponseCode = ResponseCode.Failed,
                 Message = "Something went wrong"
             });
         }
@@ -175,7 +187,7 @@ namespace eCampusGuard.API.Controllers
                 {
                     return Ok(new ResponseDto
                     {
-                        ResponseCode = ResponseCodeEnum.Success,
+                        ResponseCode = ResponseCode.Success,
                         Message = "Permit deleted successfully"
                     });
                 }
@@ -184,14 +196,14 @@ namespace eCampusGuard.API.Controllers
             {
                 return BadRequest(new ResponseDto
                 {
-                    ResponseCode = ResponseCodeEnum.Failed,
+                    ResponseCode = ResponseCode.Failed,
                     Message = e.ToString()
                 });
             }
 
             return BadRequest(new ResponseDto
             {
-                ResponseCode = ResponseCodeEnum.Failed,
+                ResponseCode = ResponseCode.Failed,
                 Message = "Something went wrong"
             });
 		}

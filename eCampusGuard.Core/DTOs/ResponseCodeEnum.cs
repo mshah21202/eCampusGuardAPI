@@ -1,7 +1,7 @@
 ﻿using System;
 namespace eCampusGuard.Core.DTOs
 {
-	public enum ResponseCodeEnum
+	public enum ResponseCode
 	{
 		Success = 0,
 		Failed = 99

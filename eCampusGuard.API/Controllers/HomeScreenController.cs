@@ -9,6 +9,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using static eCampusGuard.Core.Entities.UserPermit;
 
 namespace eCampusGuard.API.Controllers
 {
@@ -60,19 +61,16 @@ namespace eCampusGuard.API.Controllers
             }
             else // If the user is a normal user then add the relevant widgets
             {
-				widgets.Add(HomeScreenWidget.PermitStatus);
-
-				var hasPreviousPermits= user.UserPermits.Any();
-
-				if (hasPreviousPermits)
-				{
-					widgets.Add(HomeScreenWidget.PreviousPermits);
-					widgets.Add(HomeScreenWidget.AccessLogs);
+				if (user.UserPermits.Any(up => up.IsPermitValid() || up.Status == UserPermitStatus.Withdrawn))
+                {
+                    widgets.Add(HomeScreenWidget.PermitStatus);
+                    widgets.Add(HomeScreenWidget.AccessLogs);
+                } else
+                {
+                    widgets.Add(HomeScreenWidget.ApplicationStatus);
+                    widgets.Add(HomeScreenWidget.PreviousPermits);
+                    widgets.Add(HomeScreenWidget.UserApplications);
                 }
-                else
-				{
-					widgets.Add(HomeScreenWidget.UserApplications);
-				}
             }
 
 			result.HomeScreenWidgets = widgets;

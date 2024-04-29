@@ -1,42 +1,61 @@
 ﻿using System;
 using System.Collections;
+using System.ComponentModel.DataAnnotations;
 
 namespace eCampusGuard.Core.Entities
 {
 	public class PermitApplication
 	{
-		public enum PermitApplicationStatusEnum
+		public enum PermitApplicationStatus
 		{
 			Pending = 0,
+			[Display(Name="Awaiting Payment")]
 			AwaitingPayment = 1,
-			Denied = 2,
+            Denied = 2,
 			Paid = 3
 		}
 
-		public enum AcademicYearEnum
+		public enum AcademicYear
 		{
+			[Display(Name="First Year")]
 			FirstYear = 0,
+			[Display(Name="Second Year")]
             SecondYear = 1,
+			[Display(Name="Third Year")]
             ThirdYear = 2,
+			[Display(Name="Forth+ Year")]
             FourthPlusYear = 3,
+        }
+
+        public enum PermitApplicationOrderBy
+        {
+			[Display(Name="Student ID")]
+            StudentId = 0,
+            Name = 1,
+			[Display(Name="Academic Year")]
+            AcademicYear = 2,
+			[Display(Name="Permit Type")]
+            PermitType = 3,
+			[Display(Name="Status")]
+            Status = 4
         }
 
         public int Id { get; set; }
 		public IList<bool> AttendingDays { get; set; }
 		public int SiblingsCount { get; set; }
-		public AcademicYearEnum AcademicYear { get; set; }
+		public AcademicYear Year { get; set; }
 		public string LicenseImgPath { get; set; }
 		public string PhoneNumber { get; set; }
-		public PermitApplicationStatusEnum Status { get; set; } = PermitApplicationStatusEnum.Pending;
+		public PermitApplicationStatus Status { get; set; } = PermitApplicationStatus.Pending;
 
-		public int UserId { get; set; }
         public virtual AppUser User { get; set; }
+		public int UserId { get; set; }
 
-		public int VehicleId { get; set; }
         public virtual Vehicle Vehicle { get; set; }
+		public int VehicleId { get; set; }
 
-		public int PermitId { get; set; }
         public virtual Permit Permit { get; set; }
+		public int PermitId { get; set; }
 	}
 }
 

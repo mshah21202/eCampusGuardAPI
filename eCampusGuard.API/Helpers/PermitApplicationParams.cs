@@ -1,57 +1,88 @@
 ﻿using System;
+using System.Linq.Expressions;
 using eCampusGuard.Core.Entities;
+using LinqKit;
 using static eCampusGuard.Core.Entities.PermitApplication;
 
 namespace eCampusGuard.API.Helpers
 {
-	public enum PermitApplicationOrderBy
-	{
-		StudentId = 0,
-		Name = 1,
-		AcademicYear = 2,
-		PermitType = 3,
-		Status = 4
-	}
+	
 
 	public class PermitApplicationParams : PaginationParams
 	{
-		public string StudentId { get; set; }
-		public string Name { get; set; }
-		public int AcademicYear { get; set; }
-		public int PermitId { get; set; }
-		public int Status { get; set; }
-		public PermitApplicationOrderBy OrderBy { get; set; } = PermitApplicationOrderBy.StudentId;
+		public string? StudentId { get; set; }
+		public string? Name { get; set; }
+		public AcademicYear? Year { get; set; }
+		public int? PermitId { get; set; }
+		public PermitApplicationStatus? Status { get; set; }
+		public PermitApplicationOrderBy OrderBy { get; set; } = PermitApplicationOrderBy.Status;
 		public string OrderByDirection { get; set; } = "ASC";
 
-		public object OrderByMember(PermitApplication permitApplication)
+		public Expression<Func<PermitApplication, object>> OrderByMember()
 		{
 			switch (OrderBy)
 			{
 				case PermitApplicationOrderBy.Name:
-					return permitApplication.User.Name;
+					return (p) => p.User.Name;
 				case PermitApplicationOrderBy.AcademicYear:
-					return permitApplication.AcademicYear;
+					return (p) => p.Year;
 				case PermitApplicationOrderBy.PermitType:
-					return permitApplication.Permit.Name;
+					return (p) => p.Permit.Name;
 				case PermitApplicationOrderBy.Status:
-					return permitApplication.Status;
+					return (p) => p.Status;
 				default:
 				case PermitApplicationOrderBy.StudentId:
-					return permitApplication.Id;
+					return (p) => p.Id;
 			}
 		}
 
-		public bool Criteria(PermitApplication permitApplication, bool isAdmin, AppUser user)
+		public Expression<Func<PermitApplication, bool>> Criteria(bool isAdmin, AppUser user)
 		{
-			bool userId = !isAdmin ? permitApplication.UserId == user.Id : permitApplication.UserId == int.Parse(StudentId);
-			bool name = !isAdmin ? permitApplication.User.Name == user.Name : permitApplication.User.Name == Name;
-			bool academicYear = permitApplication.AcademicYear == (AcademicYearEnum)AcademicYear;
-			bool permitId = permitApplication.PermitId == PermitId;
-			bool status = permitApplication.Status == (PermitApplicationStatusEnum)Status;
+			//Expression<Func<PermitApplication, bool>> criteria = (p) => true;
+			var predicate = PredicateBuilder.New<PermitApplication>();
+			if (StudentId != null)
+			{
+				predicate.And((p) => !isAdmin ? p.User.UserName == user.UserName : p.User.UserName == StudentId);
+			} else if (!isAdmin)
+			{
+				predicate.And((p) => p.User.UserName == user.UserName);
+			}
 
-            bool criteria = userId && name && academicYear && permitId && status;
+			if (Name != null)
+			{
+				predicate.And((p) => !isAdmin ? p.User.Name == user.Name : p.User.Name == Name);
+			} else if (!isAdmin)
+			{
+                predicate.And((p) => p.User.Name == user.Name);
+            }
 
-			return criteria;
+            if (Year != null)
+			{
+				predicate.And((p) => p.Year == Year);
+			}
+
+			if (PermitId != null)
+			{
+				predicate.And((p) => p.PermitId == PermitId);
+			}
+
+			if (Status != null)
+			{
+				predicate.And((p) => p.Status == Status);
+			}
+
+			if (Status == null && PermitId == null && Year == null && Name == null && StudentId == null)
+			{
+				predicate.Or((p) => true);
+			}
+				//(p) =>
+				//(!isAdmin ? p.UserId == user.Id : StudentId != null ? (p.UserId == int.Parse(StudentId)) : true) &&
+				//(!isAdmin ? p.User.Name == user.Name : p.User.Name == Name) &&
+				//(p.Year == Year) &&
+				//(p.PermitId == PermitId) &&
+				//(p.Status == Status);
+
+			return predicate;
 		}
 	}
 }

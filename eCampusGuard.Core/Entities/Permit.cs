@@ -14,7 +14,8 @@ namespace eCampusGuard.Core.Entities
 		public int AreaId { get; set; }
         public virtual Area Area { get; set; }
         public virtual IEnumerable<UserPermit> UserPermits { get; set; }
-        public virtual IEnumerable<AccessLog> AccessLogs { get; set; }
+        public virtual IEnumerable<UpdateRequest> UpdateRequests { get; set; }
+
     }
 }
 

@@ -1,16 +1,24 @@
 ﻿using System;
 namespace eCampusGuard.Core.Entities
 {
-	public class UserPermit
-	{
-		public enum UserPermitStatus
-		{
-			Valid = 0,
-			Withdrawn = 1,
-			Expired = 2,
-		}
+    public enum UserPermitStatus
+    {
+        Valid = 0,
+        Withdrawn = 1,
+        Expired = 2,
+    }
 
-		public UserPermitStatus Status { get; set; }
+    public enum UserPermitOrderBy
+    {
+        StudentId = 0,
+        PlateNumber = 1,
+        Status = 2
+    }
+    public class UserPermit
+	{
+        public int Id { get; set; }
+
+        public UserPermitStatus Status { get; set; }
 		public DateTime Expiry { get; set; }
 
 		public int UserId { get; set; }
@@ -21,6 +29,9 @@ namespace eCampusGuard.Core.Entities
 
 		public int VehicleId { get; set; }
         public virtual Vehicle Vehicle { get; set; }
+
+        public virtual IEnumerable<UpdateRequest> UpdateRequests { get; set; }
+        public virtual IEnumerable<AccessLog> AccessLogs { get; set; }
 
         public bool IsPermitValid()
         {

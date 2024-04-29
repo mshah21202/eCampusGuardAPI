@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 using eCampusGuard.Core.DTOs;
 using eCampusGuard.Core.Entities;
@@ -7,6 +8,7 @@ using eCampusGuard.MSSQL;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Extensions;
 
 namespace eCampusGuard.API.Controllers
 {
@@ -29,13 +31,6 @@ namespace eCampusGuard.API.Controllers
 		[HttpPost("login")]
 		public async Task<ActionResult<AuthResponseDto>> Login(LoginDto loginDto)
         {
-            // Check if user exists
-
-            if (!await UserExists(loginDto.Username)) return NotFound(new AuthResponseDto
-            {
-                Code = AuthResponseCode.IncorrectCreds
-            });
-
             // Try to authenticate
             try
             {
@@ -57,17 +52,18 @@ namespace eCampusGuard.API.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(new AuthResponseDto
+                return Ok(new AuthResponseDto
                 {
                     Code = AuthResponseCode.Other,
-                    Error = e.ToString()
+                    Error = e.Message
                 });
             }
             
 
-            return BadRequest(new AuthResponseDto
+            return Ok(new AuthResponseDto
             {
                 Code = AuthResponseCode.IncorrectCreds,
+                Error = AuthResponseCode.IncorrectCreds.GetAttributeOfType<DisplayAttribute>().Name
             });
         }
 
@@ -77,9 +73,10 @@ namespace eCampusGuard.API.Controllers
             // If user already exists, return error
             if (await UserExists(registerDto.Username))
             {
-                return BadRequest(new AuthResponseDto
+                return Ok(new AuthResponseDto
                 {
-                    Code = AuthResponseCode.AlreadyRegistered
+                    Code = AuthResponseCode.AlreadyRegistered,
+                    Error = AuthResponseCode.AlreadyRegistered.GetAttributeOfType<DisplayAttribute>().Name
                 });
             }
 
@@ -107,16 +104,18 @@ namespace eCampusGuard.API.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(new AuthResponseDto
+                return Ok(new AuthResponseDto
                 {
                     Code = AuthResponseCode.Other,
-                    Error = e.ToString()
+                    Error = e.Message
                 });
             }
 
-            return BadRequest(new AuthResponseDto
+            return Ok(new AuthResponseDto
             {
-                Code = AuthResponseCode.Other
+                Code = AuthResponseCode.Other,
+                Error = AuthResponseCode.Other.GetAttributeOfType<DisplayAttribute>().Name
+
             });
         }
 

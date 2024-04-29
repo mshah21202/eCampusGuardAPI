@@ -9,29 +9,31 @@ using eCampusGuard.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using static eCampusGuard.Core.Entities.PermitApplication;
+using static eCampusGuard.Core.Entities.UserPermit;
 
 namespace eCampusGuard.API.Controllers
 {
     [Authorize]
-	public class PermitApplicationController : BaseApiController
-	{
+    public class PermitApplicationController : BaseApiController
+    {
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
 
         public PermitApplicationController(IUnitOfWork unitOfWork, IMapper mapper, UserManager<AppUser> userManager)
-		{
+        {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userManager = userManager;
-		}
+        }
 
         /// <summary>
         /// Gets all permit applications for user, or gets all permit applications for all users if request is made by admin
         /// </summary>
         /// <returns></returns>
         [HttpGet()]
-        public async Task<ActionResult<IEnumerable<PermitApplicationInfoDto>>> GetPermitApplications([FromQuery]PermitApplicationParams applicationParams)
+        public async Task<ActionResult<IEnumerable<PermitApplicationInfoDto>>> GetPermitApplications([FromQuery] PermitApplicationParams applicationParams)
         {
             var user = await _unitOfWork.AppUsers.GetByIdAsync(User.GetUserId());
 
@@ -41,12 +43,18 @@ namespace eCampusGuard.API.Controllers
             }
 
             var roles = await _userManager.GetRolesAsync(user);
+            var isAdmin = roles.Any(r => r == "Admin");
             var applications = (await _unitOfWork.PermitApplications.FindAllAsync(
-                criteria: p => applicationParams.Criteria(p, roles.Any(r => r == "Admin"), user),
-                orderBy: p => applicationParams.OrderByMember(p),
-                orderByDirection: applicationParams.OrderByDirection,
-                skip: (applicationParams.PageNumber - 1) * applicationParams.PageSize,
-                take: applicationParams.PageSize)).AsQueryable();
+               applicationParams.Criteria(isAdmin, user),
+               null,
+               applicationParams.OrderByMember(),
+               applicationParams.OrderByDirection,
+               applicationParams.PageSize,
+               applicationParams.PageNumber * applicationParams.PageSize)).AsQueryable();
+
+            var count = await _unitOfWork.PermitApplications.CountAsync(applicationParams.Criteria(isAdmin, user));
+
+            Response.AddPaginationHeader(applicationParams.PageNumber, applicationParams.PageSize, count, (int)Math.Ceiling(count / (double)applicationParams.PageSize));
 
             return Ok(applications.ProjectTo<PermitApplicationInfoDto>(_mapper.ConfigurationProvider).ToList());
         }
@@ -67,9 +75,12 @@ namespace eCampusGuard.API.Controllers
             }
 
             var roles = await _userManager.GetRolesAsync(user);
-            var application = await _unitOfWork.PermitApplications.FindAsync(a => (a.UserId == User.GetUserId() || roles.Any(r => r == "Admin")) && (a.Id == id), includes: new[] { "Vehicle", "Permit" });
+            var isAdmin = roles.Any(r => r == "Admin");
+            var application = await _unitOfWork.PermitApplications.FindAsync(
+                a => (a.Id == id) && (isAdmin || a.UserId == User.GetUserId())
+            );
 
-
+            
             // If user is not admin and user is trying to get application of another user
             if (application == null)
             {
@@ -97,7 +108,7 @@ namespace eCampusGuard.API.Controllers
                 {
                     return NotFound(new ResponseDto
                     {
-                        ResponseCode = ResponseCodeEnum.Failed,
+                        ResponseCode = ResponseCode.Failed,
                         Message = "Could not find user"
                     });
                 }
@@ -111,7 +122,7 @@ namespace eCampusGuard.API.Controllers
                 {
                     return NotFound(new ResponseDto
                     {
-                        ResponseCode = ResponseCodeEnum.Failed,
+                        ResponseCode = ResponseCode.Failed,
                         Message = "Could not find permit"
                     });
                 }
@@ -123,7 +134,7 @@ namespace eCampusGuard.API.Controllers
                 {
                     return Ok(new ResponseDto
                     {
-                        ResponseCode = ResponseCodeEnum.Success
+                        ResponseCode = ResponseCode.Success
                     });
                 }
             }
@@ -131,15 +142,15 @@ namespace eCampusGuard.API.Controllers
             {
                 return BadRequest(new ResponseDto
                 {
-                    ResponseCode = ResponseCodeEnum.Failed,
+                    ResponseCode = ResponseCode.Failed,
                     Message = e
                 });
             }
-            
+
 
             return BadRequest(new ResponseDto
             {
-                ResponseCode = ResponseCodeEnum.Failed,
+                ResponseCode = ResponseCode.Failed,
                 Message = "Something went wrong"
             });
         }
@@ -162,24 +173,42 @@ namespace eCampusGuard.API.Controllers
                 {
                     return BadRequest(new ResponseDto
                     {
-                        ResponseCode = ResponseCodeEnum.Failed,
+                        ResponseCode = ResponseCode.Failed,
                         Message = "Could not find application with id " + id
                     });
                 }
 
-                _unitOfWork.PermitApplications.Update(_mapper.Map<PermitApplication>(permitApplicationDto));
+                var updatedApplication = _mapper.Map<PermitApplication>(permitApplicationDto);
+                application.Permit = await _unitOfWork.Permits.GetByIdAsync(updatedApplication.Permit.Id);
+                application.PermitId = updatedApplication.PermitId;
+                application.AttendingDays = new List<bool>(updatedApplication.AttendingDays);
+                application.PhoneNumber = updatedApplication.PhoneNumber;
+                application.SiblingsCount = updatedApplication.SiblingsCount;
+                application.Status = updatedApplication.Status;
+                application.PhoneNumber = updatedApplication.PhoneNumber;
+                application.Vehicle.Color = updatedApplication.Vehicle.Color;
+                application.Vehicle.Make = updatedApplication.Vehicle.Make;
+                application.Vehicle.Model = updatedApplication.Vehicle.Model;
+                application.Vehicle.Nationality = updatedApplication.Vehicle.Nationality;
+                application.Vehicle.PlateNumber = updatedApplication.Vehicle.PlateNumber;
+                application.Vehicle.Year = updatedApplication.Vehicle.Year;
+                application.Year = updatedApplication.Year;
+
+
+                _unitOfWork.PermitApplications.Update(application);
+
                 if (await _unitOfWork.CompleteAsync() > 0)
                 {
                     return Ok(new ResponseDto
                     {
-                        ResponseCode = ResponseCodeEnum.Success,
+                        ResponseCode = ResponseCode.Success,
                         Message = "Successfully updated permit application"
                     });
                 }
 
                 return BadRequest(new ResponseDto
                 {
-                    ResponseCode = ResponseCodeEnum.Failed,
+                    ResponseCode = ResponseCode.Failed,
                     Message = "Could not save permit application"
                 });
             }
@@ -187,9 +216,112 @@ namespace eCampusGuard.API.Controllers
             {
                 return BadRequest(new ResponseDto
                 {
-                    ResponseCode = ResponseCodeEnum.Failed,
+                    ResponseCode = ResponseCode.Failed,
                     Message = e.ToString()
                 });
+            }
+
+        }
+
+        [Authorize(Policy = "RequireAdminRole")]
+        [HttpPost("pay/{id}")]
+        public async Task<ActionResult<ResponseDto>> OnPaymentSuccessful(int id)
+        {
+            try
+            {
+                var application = await _unitOfWork.PermitApplications.GetByIdAsync(id);
+
+                if (application == null)
+                {
+                    return Ok(new ResponseDto
+                    {
+                        ResponseCode = ResponseCode.Failed,
+                        Message = "Could not find application with id " + id
+                    });
+                }
+
+                // TODO: Create a UserPermit
+                var userPermit = new UserPermit
+                {
+                    Status = UserPermitStatus.Valid,
+                    User = application.User,
+                    Permit = application.Permit,
+                    Vehicle = application.Vehicle,
+                };
+
+                await _unitOfWork.UserPermits.AddAsync(userPermit);
+
+                application.Status = PermitApplicationStatus.Paid;
+                _unitOfWork.PermitApplications.Update(application);
+
+                if (await _unitOfWork.CompleteAsync() > 0)
+                {
+                    return Ok(new ResponseDto
+                    {
+                        ResponseCode = ResponseCode.Success,
+                        Message = "Successfully paid"
+                    });
+                }
+
+                return Ok(new ResponseDto
+                {
+                    ResponseCode = ResponseCode.Failed,
+                    Message = "Something went wrong"
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new ResponseDto
+                {
+                    ResponseCode = ResponseCode.Failed,
+                    Message = e.Message
+                });
+            }
+        }
+
+        [Authorize(Policy = "RequireAdminRole")]
+        [HttpGet("summary")]
+        public async Task<ActionResult<List<ApplicationSummaryDto>>> GetApplicationSummary()
+        {
+            // Categories = [Needs Review, Awaiting Payment, Paid]
+
+            try
+            {
+                var needsReviewCount = await _unitOfWork.PermitApplications.CountAsync(a => a.Status == PermitApplicationStatus.Pending);
+                var awaitingPaymentCount = await _unitOfWork.PermitApplications.CountAsync(a => a.Status == PermitApplicationStatus.AwaitingPayment);
+                var paidCount = await _unitOfWork.PermitApplications.CountAsync(a => a.Status == PermitApplicationStatus.Paid);
+
+                List<ApplicationSummaryDto> result = new()
+                {
+                    new ApplicationSummaryDto
+                    {
+                        Title = "Needs Review",
+                        Count = needsReviewCount,
+                        Icon = "0xe51c",
+                        Route = "status=0"
+                    },
+                    new ApplicationSummaryDto
+                    {
+                        Title = "Awaiting Payment",
+                        Count = awaitingPaymentCount,
+                        Icon = "0xe481",
+                        Route = "status=1"
+                    },
+                    new ApplicationSummaryDto
+                    {
+                        Title = "Paid",
+                        Count = paidCount,
+                        Icon = "0xe46a",
+                        Route = "status=3"
+                    },
+                };
+
+                return Ok(result);
+
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
             }
 
         }

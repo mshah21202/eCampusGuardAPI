@@ -14,14 +14,15 @@ namespace eCampusGuard.Core.Interfaces
         IBaseRepository<Area> Areas { get; }
         IBaseRepository<AccessLog> AccessLogs { get; }
         IBaseRepository<UserPermit> UserPermits { get; }
-        IBaseRepository<TransferRequest> TransferRequests { get; }
-        IBaseRepository<UpdateDetailsRequest> UpdateDetailsRequests { get; }
+        IBaseRepository<UpdateRequest> UpdateRequests { get; }
+        IBaseRepository<Vehicle> Vehicles { get; }
 
         int Complete();
         Task<int> CompleteAsync();
         void BeginTransaction();
         void Commit();
         void Rollback();
+        void ClearTracking();
 
         /// <summary>
         /// Executes a stored procedure with the specified parameters (in & out params)

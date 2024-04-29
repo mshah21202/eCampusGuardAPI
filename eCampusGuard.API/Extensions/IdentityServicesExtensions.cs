@@ -22,7 +22,13 @@ namespace eCampusGuard.API.Extensions
 			.AddRoleValidator<RoleValidator<AppRole>>()
             .AddEntityFrameworkStores<SQLDataContext>();
 
-			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            services.AddAuthorization(opt =>
+            {
+                opt.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+                opt.AddPolicy("RequireGateStaffRole", policy => policy.RequireRole("Admin", "GateStaff"));
+            });
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 				.AddJwtBearer(opt =>
 				{
 					opt.TokenValidationParameters = new TokenValidationParameters
@@ -33,12 +39,7 @@ namespace eCampusGuard.API.Extensions
                         ValidateAudience = false
                     };
 				});
-
-			services.AddAuthorization(opt =>
-			{
-				opt.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
-                opt.AddPolicy("RequireGateStaffRole", policy => policy.RequireRole("Admin", "GateStaff"));
-            });
+			
 
 			return services;
 		}

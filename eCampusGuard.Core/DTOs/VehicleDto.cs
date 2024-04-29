@@ -9,7 +9,7 @@ namespace eCampusGuard.Core.DTOs
         public string Model { get; set; }
         public int Year { get; set; }
         public string Color { get; set; }
-        public string RegistrationDocImgPath { get; set; }
+        public string? RegistrationDocImgPath { get; set; }
     }
 }
 

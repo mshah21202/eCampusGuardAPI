@@ -8,7 +8,8 @@ namespace eCampusGuard.Core.Entities
         AccessLogs = 2,
         PreviousPermits = 3,
         ApplicationsSummary = 4,
-        AreasSummary = 5
+        AreasSummary = 5,
+        ApplicationStatus = 6
     }
 }
 

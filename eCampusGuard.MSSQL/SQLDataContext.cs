@@ -22,8 +22,7 @@ namespace eCampusGuard.MSSQL
 		public DbSet<UserPermit> UserPermits { get; set; }
 		public DbSet<PermitApplication> PermitApplications { get; set; }
 		public DbSet<AccessLog> AccessLogs { get; set; }
-		public DbSet<TransferRequest> TransferRequests { get; set; }
-		public DbSet<UpdateDetailsRequest> UpdateDetailsRequests { get; set; }
+		public DbSet<UpdateRequest> UpdateRequests { get; set; }
 
         public SQLDataContext()
 		{
@@ -43,7 +42,6 @@ namespace eCampusGuard.MSSQL
                 if (bitArray[i])
                     value += Convert.ToInt16(Math.Pow(2, i));
             }
-
             return value;
         }
 
@@ -51,7 +49,7 @@ namespace eCampusGuard.MSSQL
         {
             var result = new List<bool> { false, false, false, false, false };
             var j = 0;
-            for (int i = result.Count - 1; i > 0; i--)
+            for (int i = result.Count - 1; i >= 0; i--)
             {
                 var weight = Convert.ToInt16(Math.Pow(2, i));
 
@@ -124,8 +122,8 @@ namespace eCampusGuard.MSSQL
 
 
 
-            builder.Entity<UserPermit>()
-				.HasKey(up => new { up.UserId, up.PermitId });
+    //        builder.Entity<UserPermit>()
+				//.HasKey(up => new { up.UserId, up.PermitId });
 			builder.Entity<UserPermit>()
 				.HasOne(up => up.Permit)
 				.WithMany(p => p.UserPermits)
@@ -141,20 +139,11 @@ namespace eCampusGuard.MSSQL
 				.OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<AccessLog>()
-				.HasOne(al => al.User)
+				.HasOne(al => al.UserPermit)
 				.WithMany(u => u.AccessLogs)
-				.HasForeignKey(al => al.UserId)
+				.HasForeignKey(al => al.UserPermitId)
 				.OnDelete(DeleteBehavior.NoAction);
-            builder.Entity<AccessLog>()
-                .HasOne(al => al.Vehicle)
-                .WithMany(v => v.AccessLogs)
-                .HasForeignKey(al => al.VehicleId)
-                .OnDelete(DeleteBehavior.NoAction);
-            builder.Entity<AccessLog>()
-                .HasOne(al => al.Permit)
-                .WithMany(p => p.AccessLogs)
-                .HasForeignKey(al => al.PermitId)
-                .OnDelete(DeleteBehavior.NoAction);
+            
 
             builder.Entity<PermitApplication>()
                 .HasOne(pa => pa.User)
@@ -162,12 +151,58 @@ namespace eCampusGuard.MSSQL
                 .HasForeignKey(pa => pa.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            builder.Entity<PermitApplication>()
+                .HasOne(pa => pa.Vehicle)
+                .WithMany(v => v.PermitApplications)
+                .HasForeignKey(pa => pa.VehicleId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<UpdateRequest>()
+                .HasOne(ur => ur.UserPermit)
+                .WithMany(up => up.UpdateRequests)
+                .HasForeignKey(ur => ur.Id)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<UpdateRequest>()
+                .HasOne(ur => ur.NewPermit)
+                .WithMany(p => p.UpdateRequests)
+                .HasForeignKey(ur => ur.NewPermitId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<UpdateRequest>()
+                .HasOne(ur => ur.UpdatedVehicle)
+                .WithMany(p => p.UpdateRequests)
+                .HasForeignKey(ur => ur.UpdatedVehicleId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+
             builder.Entity<UserPermit>()
+                .AfterUpdate(trigger => trigger
+                .Action(
+                    action => action
+                        .Condition((before, after) => before.PermitId != after.PermitId)
+                        .ExecuteRawSql("UPDATE dbo.Permits SET Occupied = (SELECT COUNT(*) FROM dbo.UserPermits WHERE PermitId = {0} AND [Status] = 0) WHERE dbo.Permits.Id = {0}", (before, after) => after.PermitId)
+                        .ExecuteRawSql("UPDATE dbo.Permits SET Occupied = (SELECT COUNT(*) FROM dbo.UserPermits WHERE PermitId = {0} AND [Status] = 0) WHERE dbo.Permits.Id = {0}", (before, after) => before.PermitId)
+                    )
+                )
                 .AfterInsert(trigger => trigger
                 .Action(action => action
-                    .Condition(ur => ur.IsPermitValid())
-                    .ExecuteRawSql("UPDATE dbo.Areas SET Occupied = (SELECT COUNT(*) FROM dbo.UserPermits WHERE PermitId = {0} AND [Status] = 0) WHERE dbo.Areas.Id = {0}", ur => ur.PermitId)
+                    .Condition(ur => ur.Status == UserPermitStatus.Valid)
+                    .ExecuteRawSql("UPDATE dbo.Permits SET Occupied = (SELECT COUNT(*) FROM dbo.UserPermits WHERE PermitId = {0} AND [Status] = 0) WHERE dbo.Permits.Id = {0}", ur => ur.PermitId)
                    )
+                )
+                .AfterDelete(trigger => trigger
+                .Action(action => action
+                    .ExecuteRawSql("UPDATE dbo.Permits SET Occupied = (SELECT COUNT(*) FROM dbo.UserPermits WHERE PermitId = {0} AND [Status] = 0) WHERE dbo.Permits.Id = {0}", ur => ur.PermitId)
+                ));
+
+            builder.Entity<Permit>()
+                .AfterUpdate(trigger => trigger
+                .Action(
+                    action => action
+                        .ExecuteRawSql("UPDATE dbo.Areas SET Occupied = (SELECT SUM(Occupied) FROM dbo.Permits WHERE Id = {0}) WHERE dbo.Areas.Id = {1}", (before, after) => after.Id, (before, after) => after.AreaId)
+                        .ExecuteRawSql("UPDATE dbo.Areas SET Occupied = (SELECT SUM(Occupied) FROM dbo.Permits WHERE Id = {0}) WHERE dbo.Areas.Id = {1}", (before, after) => before.Id, (before, after) => before.AreaId)
+                    )
                 );
         }
     }

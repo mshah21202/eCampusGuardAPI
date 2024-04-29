@@ -21,6 +21,8 @@
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.16" />
 		<PackageReference Include="Laraue.EfCoreTriggers.SqlServer" Version="7.0.8" />
 		<PackageReference Include="Laraue.EfCoreTriggers.Common" Version="7.0.8" />
+		<PackageReference Include="LinqKit" Version="1.2.5" />
+		<PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="7.1.5" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Remove="Controllers\" />

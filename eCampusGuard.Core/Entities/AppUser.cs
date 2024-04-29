@@ -9,7 +9,6 @@ namespace eCampusGuard.Core.Entities
 		public virtual ICollection<AppUserRole> UserRoles { get; set; }
         public virtual IEnumerable<Vehicle> Vehicles { get; set; }
         public virtual IEnumerable<PermitApplication> PermitApplications { get; set; }
-        public virtual IEnumerable<AccessLog> AccessLogs { get; set; }
         public virtual IEnumerable<UserPermit> UserPermits { get; set; }
 		public virtual IEnumerable<Notification> Notifications { get; set; }
 	}

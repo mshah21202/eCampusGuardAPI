@@ -21,8 +21,8 @@ namespace eCampusGuard.MSSQL
         public IBaseRepository<Area> Areas { get; }
         public IBaseRepository<AccessLog> AccessLogs { get; }
         public IBaseRepository<UserPermit> UserPermits { get; }
-        public IBaseRepository<TransferRequest> TransferRequests { get; }
-        public IBaseRepository<UpdateDetailsRequest> UpdateDetailsRequests { get; }
+        public IBaseRepository<UpdateRequest> UpdateRequests { get; }
+        public IBaseRepository<Vehicle> Vehicles { get; }
 
 
 
@@ -38,8 +38,13 @@ namespace eCampusGuard.MSSQL
             Areas = new BaseRepository<Area>(_context);
             AccessLogs = new BaseRepository<AccessLog>(_context);
             UserPermits = new BaseRepository<UserPermit>(_context);
-            TransferRequests = new BaseRepository<TransferRequest>(_context);
-            UpdateDetailsRequests = new BaseRepository<UpdateDetailsRequest>(_context);
+            UpdateRequests = new BaseRepository<UpdateRequest>(_context);
+            Vehicles = new BaseRepository<Vehicle>(_context);
+        }
+
+        public void ClearTracking()
+        {
+            _context.ChangeTracker.Clear();
         }
 
         public void BeginTransaction()

@@ -5,13 +5,25 @@ using eCampusGuard.Core.Entities;
 using eCampusGuard.Core.Interfaces;
 using eCampusGuard.MSSQL;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "CorsPolicy", policy =>
+    {
+        policy.AllowAnyOrigin();
+        policy.AllowAnyHeader();
+        policy.AllowAnyMethod();
+    });
+
+});
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -40,6 +52,12 @@ builder.Services.AddIdentityServices(builder.Configuration);
 
 var app = builder.Build();
 
+
+app.UseCors("CorsPolicy");
+
+app.UseHttpLogging();
+
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -62,9 +80,10 @@ var services = scope.ServiceProvider;
 try
 {
     var context = services.GetRequiredService<SQLDataContext>();
+    var unitOfWork = services.GetRequiredService<IUnitOfWork>();
     var userManager = services.GetRequiredService<UserManager<AppUser>>();
     var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
-    await Seed.SeedUsersAndRoles(userManager, roleManager);
+    await Seed.SeedUsersAndRoles(userManager, roleManager, unitOfWork);
 }
 catch (Exception ex)
 {

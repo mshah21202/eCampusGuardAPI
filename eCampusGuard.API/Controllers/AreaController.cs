@@ -2,6 +2,7 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using eCampusGuard.API.Extensions;
+using eCampusGuard.API.Helpers;
 using eCampusGuard.Core.DTOs;
 using eCampusGuard.Core.Entities;
 using eCampusGuard.Core.Interfaces;
@@ -26,7 +27,7 @@ namespace eCampusGuard.API.Controllers
         }
 
 		[HttpGet()]
-		public async Task<ActionResult<IEnumerable<AreaDto>>> GetAreas()
+		public async Task<ActionResult<IEnumerable<AreaDto>>> GetAreas([FromQuery]PaginationParams paginationParams)
 		{
             var user = await _unitOfWork.AppUsers.GetByIdAsync(User.GetUserId());
 
@@ -35,7 +36,17 @@ namespace eCampusGuard.API.Controllers
                 return Unauthorized();
             }
 
-            var areas = (await _unitOfWork.Areas.GetAllAsync()).AsQueryable();
+            var areas = (await _unitOfWork.Areas.FindAllAsync(
+                a => true,
+                null,
+                null,
+                "ASC",
+                paginationParams.PageSize,
+                paginationParams.PageSize * paginationParams.PageNumber)).AsQueryable();
+
+            var totalItems = await _unitOfWork.Areas.CountAsync();
+
+            Response.AddPaginationHeader(paginationParams.PageNumber, paginationParams.PageSize, totalItems, (int)Math.Ceiling(totalItems / (double)paginationParams.PageSize));
 
             return Ok(areas.ProjectTo<AreaDto>(_mapper.ConfigurationProvider).ToList());
         }
@@ -54,7 +65,7 @@ namespace eCampusGuard.API.Controllers
                 {
                     return Ok(new ResponseDto
                     {
-                        ResponseCode = ResponseCodeEnum.Success,
+                        ResponseCode = ResponseCode.Success,
                         Message = "Area created successfully"
                     });
                 }
@@ -63,14 +74,14 @@ namespace eCampusGuard.API.Controllers
             {
                 return BadRequest(new ResponseDto
                 {
-                    ResponseCode = ResponseCodeEnum.Failed,
+                    ResponseCode = ResponseCode.Failed,
                     Message = e.ToString()
                 });
             }
 
             return BadRequest(new ResponseDto
             {
-                ResponseCode = ResponseCodeEnum.Failed,
+                ResponseCode = ResponseCode.Failed,
                 Message = "Something went wrong"
             });
 		}
@@ -91,7 +102,7 @@ namespace eCampusGuard.API.Controllers
                 {
                     return Ok(new ResponseDto
                     {
-                        ResponseCode = ResponseCodeEnum.Success,
+                        ResponseCode = ResponseCode.Success,
                         Message = "Area updated successfully"
                     });
                 }
@@ -100,14 +111,14 @@ namespace eCampusGuard.API.Controllers
             {
                 return BadRequest(new ResponseDto
                 {
-                    ResponseCode = ResponseCodeEnum.Failed,
+                    ResponseCode = ResponseCode.Failed,
                     Message = e.ToString()
                 });
             }
 
             return BadRequest(new ResponseDto
             {
-                ResponseCode = ResponseCodeEnum.Failed,
+                ResponseCode = ResponseCode.Failed,
                 Message = "Something went wrong"
             });
         }
@@ -122,7 +133,7 @@ namespace eCampusGuard.API.Controllers
                 return NotFound();
             }
 
-            return Ok(area);
+            return Ok(_mapper.Map<AreaDto>(area));
 		}
 
 
@@ -132,7 +143,7 @@ namespace eCampusGuard.API.Controllers
 		{
             var area = await _unitOfWork.Areas.GetByIdAsync(id);
 
-            var accessLogs = (await _unitOfWork.AccessLogs.FindAllAsync(al => al.Permit.AreaId == id)).AsQueryable();
+            var accessLogs = (await _unitOfWork.AccessLogs.FindAllAsync(al => al.UserPermit.Permit.AreaId == id)).AsQueryable();
 
             return Ok(new AreaScreenDto
             {
@@ -159,7 +170,7 @@ namespace eCampusGuard.API.Controllers
                 {
                     return Ok(new ResponseDto
                     {
-                        ResponseCode = ResponseCodeEnum.Success,
+                        ResponseCode = ResponseCode.Success,
                         Message = "Area deleted successfully"
                     });
                 }
@@ -169,14 +180,14 @@ namespace eCampusGuard.API.Controllers
             {
                 return BadRequest(new ResponseDto
                 {
-                    ResponseCode = ResponseCodeEnum.Failed,
+                    ResponseCode = ResponseCode.Failed,
                     Message = e.ToString()
                 });
             }
 
             return BadRequest(new ResponseDto
             {
-                ResponseCode = ResponseCodeEnum.Failed,
+                ResponseCode = ResponseCode.Failed,
                 Message = "Something went wrong"
             });
         }
