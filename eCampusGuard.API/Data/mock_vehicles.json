@@ -1,0 +1,202 @@
+[
+    {
+        "plateNumber": "41-35628",
+        "registrationDocImgPath": "http://dummyimage.com/123x343.png/dddddd/000000",
+        "nationality": "JO",
+        "make": "Mercedes-Benz",
+        "model": "R-Class",
+        "color": "Pink",
+        "year": 2018,
+        "userId": 1
+    },
+    {
+        "plateNumber": "46-1370",
+        "registrationDocImgPath": "http://dummyimage.com/219x407.png/dddddd/000000",
+        "nationality": "JO",
+        "make": "Chevrolet",
+        "model": "Malibu",
+        "color": "Goldenrod",
+        "year": 2021,
+        "userId": 2
+    },
+    {
+        "plateNumber": "48-4691",
+        "registrationDocImgPath": "http://dummyimage.com/225x372.png/5fa2dd/ffffff",
+        "nationality": "JO",
+        "make": "Infiniti",
+        "model": "Q",
+        "color": "Puce",
+        "year": 2017,
+        "userId": 3
+    },
+    {
+        "plateNumber": "46-96410",
+        "registrationDocImgPath": "http://dummyimage.com/124x264.png/cc0000/ffffff",
+        "nationality": "JO",
+        "make": "Audi",
+        "model": "Q7",
+        "color": "Fuscia",
+        "year": 2024,
+        "userId": 4
+    },
+    {
+        "plateNumber": "32-09424",
+        "registrationDocImgPath": "http://dummyimage.com/247x254.png/dddddd/000000",
+        "nationality": "JO",
+        "make": "Nissan",
+        "model": "Sentra",
+        "color": "Indigo",
+        "year": 2013,
+        "userId": 5
+    },
+    {
+        "plateNumber": "30-2961",
+        "registrationDocImgPath": "http://dummyimage.com/236x415.png/cc0000/ffffff",
+        "nationality": "JO",
+        "make": "Aston Martin",
+        "model": "Vantage",
+        "color": "Puce",
+        "year": 2022,
+        "userId": 6
+    },
+    {
+        "plateNumber": "38-50948",
+        "registrationDocImgPath": "http://dummyimage.com/229x383.png/cc0000/ffffff",
+        "nationality": "JO",
+        "make": "Pontiac",
+        "model": "Grand Prix",
+        "color": "Teal",
+        "year": 2013,
+        "userId": 7
+    },
+    {
+        "plateNumber": "43-2900",
+        "registrationDocImgPath": "http://dummyimage.com/238x169.png/cc0000/ffffff",
+        "nationality": "JO",
+        "make": "Pontiac",
+        "model": "LeMans",
+        "color": "Teal",
+        "year": 2019,
+        "userId": 8
+    },
+    {
+        "plateNumber": "33-94817",
+        "registrationDocImgPath": "http://dummyimage.com/202x311.png/dddddd/000000",
+        "nationality": "JO",
+        "make": "GMC",
+        "model": "3500 Club Coupe",
+        "color": "Red",
+        "year": 2011,
+        "userId": 9
+    },
+    {
+        "plateNumber": "34-66766",
+        "registrationDocImgPath": "http://dummyimage.com/152x218.png/cc0000/ffffff",
+        "nationality": "JO",
+        "make": "Kia",
+        "model": "Sportage",
+        "color": "Purple",
+        "year": 2021,
+        "userId": 10
+    },
+    {
+        "plateNumber": "41-16025",
+        "registrationDocImgPath": "http://dummyimage.com/145x380.png/dddddd/000000",
+        "nationality": "JO",
+        "make": "GMC",
+        "model": "Sierra 3500",
+        "color": "Teal",
+        "year": 2014,
+        "userId": 11
+    },
+    {
+        "plateNumber": "40-8969",
+        "registrationDocImgPath": "http://dummyimage.com/166x392.png/5fa2dd/ffffff",
+        "nationality": "JO",
+        "make": "Mazda",
+        "model": "929",
+        "color": "Blue",
+        "year": 2004,
+        "userId": 12
+    },
+    {
+        "plateNumber": "43-8692",
+        "registrationDocImgPath": "http://dummyimage.com/128x101.png/ff4444/ffffff",
+        "nationality": "JO",
+        "make": "Mitsubishi",
+        "model": "Eclipse",
+        "color": "Yellow",
+        "year": 2014,
+        "userId": 13
+    },
+    {
+        "plateNumber": "43-9459",
+        "registrationDocImgPath": "http://dummyimage.com/181x393.png/dddddd/000000",
+        "nationality": "JO",
+        "make": "Chevrolet",
+        "model": "Sportvan G10",
+        "color": "Red",
+        "year": 2015,
+        "userId": 14
+    },
+    {
+        "plateNumber": "33-04435",
+        "registrationDocImgPath": "http://dummyimage.com/199x140.png/5fa2dd/ffffff",
+        "nationality": "JO",
+        "make": "Dodge",
+        "model": "Neon",
+        "color": "Turquoise",
+        "year": 2008,
+        "userId": 15
+    },
+    {
+        "plateNumber": "41-4133",
+        "registrationDocImgPath": "http://dummyimage.com/223x316.png/ff4444/ffffff",
+        "nationality": "JO",
+        "make": "Mazda",
+        "model": "626",
+        "color": "Puce",
+        "year": 2007,
+        "userId": 16
+    },
+    {
+        "plateNumber": "46-00093",
+        "registrationDocImgPath": "http://dummyimage.com/180x243.png/ff4444/ffffff",
+        "nationality": "JO",
+        "make": "Ford",
+        "model": "F-Series",
+        "color": "Blue",
+        "year": 2004,
+        "userId": 17
+    },
+    {
+        "plateNumber": "31-64936",
+        "registrationDocImgPath": "http://dummyimage.com/126x104.png/ff4444/ffffff",
+        "nationality": "JO",
+        "make": "Eagle",
+        "model": "Vision",
+        "color": "Teal",
+        "year": 2005,
+        "userId": 18
+    },
+    {
+        "plateNumber": "49-75354",
+        "registrationDocImgPath": "http://dummyimage.com/129x100.png/cc0000/ffffff",
+        "nationality": "JO",
+        "make": "Lotus",
+        "model": "Elise",
+        "color": "Green",
+        "year": 2010,
+        "userId": 19
+    },
+    {
+        "plateNumber": "38-83999",
+        "registrationDocImgPath": "http://dummyimage.com/219x371.png/cc0000/ffffff",
+        "nationality": "JO",
+        "make": "Buick",
+        "model": "Rendezvous",
+        "color": "Fuscia",
+        "year": 2014,
+        "userId": 20
+    }
+]

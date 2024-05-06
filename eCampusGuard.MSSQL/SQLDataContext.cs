@@ -3,6 +3,7 @@ using System.Collections;
 using System.Reflection.Emit;
 using eCampusGuard.Core.Entities;
 using Laraue.EfCoreTriggers.Common.Extensions;
+//using Laraue.EfCoreTriggers.Common.TriggerBuilders.Base;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -10,28 +11,28 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace eCampusGuard.MSSQL
 {
-	public class SQLDataContext : IdentityDbContext<AppUser, AppRole, int,
+    public class SQLDataContext : IdentityDbContext<AppUser, AppRole, int,
         IdentityUserClaim<int>, AppUserRole, IdentityUserLogin<int>,
         IdentityRoleClaim<int>, IdentityUserToken<int>>
     {
-		// Create DbSets (Tables) for entities
-		public DbSet<AppUser> AppUsers { get; set; }
-		public DbSet<Permit> Permits { get; set; }
-		public DbSet<Area> Areas { get; set; }
-		public DbSet<Vehicle> Vehicles { get; set; }
-		public DbSet<UserPermit> UserPermits { get; set; }
-		public DbSet<PermitApplication> PermitApplications { get; set; }
-		public DbSet<AccessLog> AccessLogs { get; set; }
-		public DbSet<UpdateRequest> UpdateRequests { get; set; }
+        // Create DbSets (Tables) for entities
+        public DbSet<AppUser> AppUsers { get; set; }
+        public DbSet<Permit> Permits { get; set; }
+        public DbSet<Area> Areas { get; set; }
+        public DbSet<Vehicle> Vehicles { get; set; }
+        public DbSet<UserPermit> UserPermits { get; set; }
+        public DbSet<PermitApplication> PermitApplications { get; set; }
+        public DbSet<AccessLog> AccessLogs { get; set; }
+        public DbSet<UpdateRequest> UpdateRequests { get; set; }
 
         public SQLDataContext()
-		{
+        {
 
-		}
+        }
 
-		public SQLDataContext(DbContextOptions<SQLDataContext> options) : base(options)
-		{
-		}
+        public SQLDataContext(DbContextOptions<SQLDataContext> options) : base(options)
+        {
+        }
 
         private static int GetIntFromBitArray(IList<bool> bitArray)
         {
@@ -83,7 +84,7 @@ namespace eCampusGuard.MSSQL
                 .Metadata
                 .SetValueComparer(boolArrayComparer);
 
-			builder.Entity<PermitApplication>()
+            builder.Entity<PermitApplication>()
                 .Property(p => p.AttendingDays)
                 .HasColumnType("int")
                 .HasConversion(v => GetIntFromBitArray(v), v => GetBitArrayFromInt(v))
@@ -94,14 +95,14 @@ namespace eCampusGuard.MSSQL
                 .HasMany(u => u.UserRoles)
                 .WithOne(ur => ur.User)
                 .HasForeignKey(ur => ur.UserId)
-                .IsRequired();
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<AppRole>()
                 .HasMany(r => r.UserRoles)
                 .WithOne(ur => ur.Role)
                 .HasForeignKey(ur => ur.RoleId)
-                .OnDelete(DeleteBehavior.NoAction)
-                .IsRequired();
+                .OnDelete(DeleteBehavior.NoAction);
+
 
             var homeScreenWidgetsValueComparer = new ValueComparer<IEnumerable<HomeScreenWidget>>(
                 (c1, c2) => c1.SequenceEqual(c2),
@@ -122,28 +123,40 @@ namespace eCampusGuard.MSSQL
 
 
 
-    //        builder.Entity<UserPermit>()
-				//.HasKey(up => new { up.UserId, up.PermitId });
-			builder.Entity<UserPermit>()
-				.HasOne(up => up.Permit)
-				.WithMany(p => p.UserPermits)
-				.HasForeignKey(up => up.PermitId);
-			builder.Entity<UserPermit>()
-				.HasOne(up => up.User)
-				.WithMany(u => u.UserPermits)
-				.HasForeignKey(up => up.UserId);
+            //        builder.Entity<UserPermit>()
+            //.HasKey(up => new { up.UserId, up.PermitId });
+            builder.Entity<UserPermit>()
+                .HasOne(up => up.Permit)
+                .WithMany(p => p.UserPermits)
+                .HasForeignKey(up => up.PermitId);
+            builder.Entity<UserPermit>()
+                .HasOne(up => up.User)
+                .WithMany(u => u.UserPermits)
+                .HasForeignKey(up => up.UserId);
             builder.Entity<UserPermit>()
                 .HasOne(up => up.Vehicle)
                 .WithMany(v => v.UserPermits)
-				.HasForeignKey(up => up.VehicleId)
-				.OnDelete(DeleteBehavior.NoAction);
+                .HasForeignKey(up => up.VehicleId)
+                .OnDelete(DeleteBehavior.NoAction);
+            builder.Entity<UserPermit>()
+                .HasOne(up => up.PermitApplication)
+                .WithOne(pa => pa.UserPermit)
+                .HasForeignKey<UserPermit>(up => up.PermitApplicationId)
+                .OnDelete(DeleteBehavior.NoAction);
+
 
             builder.Entity<AccessLog>()
-				.HasOne(al => al.UserPermit)
-				.WithMany(u => u.AccessLogs)
-				.HasForeignKey(al => al.UserPermitId)
-				.OnDelete(DeleteBehavior.NoAction);
-            
+                .HasOne(al => al.UserPermit)
+                .WithMany(u => u.AccessLogs)
+                .HasForeignKey(al => al.UserPermitId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<AccessLog>()
+                .HasOne(al => al.Area)
+                .WithMany(u => u.AccessLogs)
+                .HasForeignKey(al => al.AreaId)
+                .OnDelete(DeleteBehavior.NoAction);
+
 
             builder.Entity<PermitApplication>()
                 .HasOne(pa => pa.User)
@@ -157,16 +170,17 @@ namespace eCampusGuard.MSSQL
                 .HasForeignKey(pa => pa.VehicleId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            builder.Entity<UpdateRequest>()
-                .HasOne(ur => ur.UserPermit)
-                .WithMany(up => up.UpdateRequests)
-                .HasForeignKey(ur => ur.Id)
+            builder.Entity<PermitApplication>()
+                .HasOne(pa => pa.UserPermit)
+                .WithOne(up => up.PermitApplication)
+                .HasForeignKey<PermitApplication>(pa => pa.UserPermitId)
+                //.IsRequired(false)
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<UpdateRequest>()
-                .HasOne(ur => ur.NewPermit)
-                .WithMany(p => p.UpdateRequests)
-                .HasForeignKey(ur => ur.NewPermitId)
+                .HasOne(ur => ur.UserPermit)
+                .WithMany(up => up.UpdateRequests)
+                .HasForeignKey(ur => ur.UserPermitId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<UpdateRequest>()
@@ -204,6 +218,11 @@ namespace eCampusGuard.MSSQL
                         .ExecuteRawSql("UPDATE dbo.Areas SET Occupied = (SELECT SUM(Occupied) FROM dbo.Permits WHERE Id = {0}) WHERE dbo.Areas.Id = {1}", (before, after) => before.Id, (before, after) => before.AreaId)
                     )
                 );
+
+            builder.Entity<AccessLog>()
+                .AfterInsert(trigger =>
+                    trigger.Action(action =>
+                        action.ExecuteRawSql("UPDATE dbo.Areas SET CurrentOccupied = dbo.CURR_OCCUPIED({0}) WHERE dbo.Areas.Id = {0}", (al) => al.AreaId)));
         }
     }
 }

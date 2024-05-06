@@ -19,7 +19,6 @@ namespace eCampusGuard.Core.Entities
         public int Id { get; set; }
 
         public UserPermitStatus Status { get; set; }
-		public DateTime Expiry { get; set; }
 
 		public int UserId { get; set; }
         public virtual AppUser User { get; set; }
@@ -30,12 +29,15 @@ namespace eCampusGuard.Core.Entities
 		public int VehicleId { get; set; }
         public virtual Vehicle Vehicle { get; set; }
 
+        public int PermitApplicationId { get; set; }
+        public virtual PermitApplication PermitApplication { get; set; }
+
         public virtual IEnumerable<UpdateRequest> UpdateRequests { get; set; }
         public virtual IEnumerable<AccessLog> AccessLogs { get; set; }
 
         public bool IsPermitValid()
         {
-            if (Expiry < DateTime.Now) return false;
+            if (Permit.Expiry < DateTime.Now) return false;
 
 			return true;
         }

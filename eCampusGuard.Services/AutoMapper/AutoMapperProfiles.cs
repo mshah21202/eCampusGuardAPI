@@ -32,7 +32,8 @@ namespace eCampusGuard.Services.AutoMapper
                 .ForMember(dest => dest.StudentId, opt => opt.MapFrom(src => int.Parse(src.User.UserName)))
                 .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.User.Name))
                 .ForMember(dest => dest.Vehicle, opt => opt.MapFrom(src => src.Vehicle))
-                .ForMember(dest => dest.Permit, opt => opt.MapFrom(src => src.Permit));
+                .ForMember(dest => dest.Permit, opt => opt.MapFrom(src => src.Permit))
+                .ForMember(dest => dest.UserPermitId, opt => opt.MapFrom(src => src.UserPermitId));
 
             CreateMap<PermitApplicationDto, PermitApplication>()
                 .ForMember(dest => dest.Vehicle, opt => opt.MapFrom(src => src.Vehicle))
@@ -42,8 +43,17 @@ namespace eCampusGuard.Services.AutoMapper
                 .ForMember(dest => dest.Vehicle, opt => opt.MapFrom(src => src.Vehicle))
                 .ForMember(dest => dest.PermitId, opt => opt.MapFrom(src => src.PermitId));
 
-            CreateMap<Area, AreaDto>();
-            CreateMap<AreaDto, Area>();
+            CreateMap<Area, AreaDto>()
+                .ForMember(dest => dest.Occupied, opt => opt.MapFrom(src => src.Occupied));
+            CreateMap<AreaDto, Area>()
+                .ForMember(dest => dest.Occupied, opt => opt.MapFrom(src => src.Occupied))
+                .ForMember(dest => dest.CurrentOccupied, opt => opt.MapFrom(src => 0));
+
+            CreateMap<Area, AreaScreenDto>()
+                .ForMember(dest => dest.Occupied, opt => opt.MapFrom(src => src.CurrentOccupied))
+                .ForMember(dest => dest.AccessLogs, opt => opt.MapFrom(src => src.AccessLogs));
+
+
 
             CreateMap<Permit, PermitDto>()
                 .ForMember(dest => dest.Area, opt => opt.MapFrom(src => src.Area));
@@ -51,22 +61,24 @@ namespace eCampusGuard.Services.AutoMapper
 
 
             CreateMap<UserPermit, UserPermitDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))
                 .ForMember(dest => dest.Vehicle, opt => opt.MapFrom(src => src.Vehicle))
                 .ForMember(dest => dest.Permit, opt => opt.MapFrom(src => src.Permit))
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
-                .ForMember(dest => dest.Expiry, opt => opt.MapFrom(src => src.Expiry));
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.IsPermitValid() ? src.Status : UserPermitStatus.Expired))
+                .ForMember(dest => dest.Expiry, opt => opt.MapFrom(src => src.Permit.Expiry))
+                .ForMember(dest => dest.PermitApplication, opt => opt.MapFrom(src => src.PermitApplication));
 
             CreateMap<UpdateRequest, UpdateRequestDto>()
                 .ForMember(dest => dest.UserPermit, opt => opt.MapFrom(src => src.UserPermit))
-                .ForMember(dest => dest.UpdatedVehicle, opt => opt.MapFrom(src => src.UpdatedVehicle))
-                .ForMember(dest => dest.NewPermit, opt => opt.MapFrom(src => src.NewPermit));
+                .ForMember(dest => dest.UpdatedVehicle, opt => opt.MapFrom(src => src.UpdatedVehicle));
 
 
             CreateMap<AccessLog, AccessLogDto>()
                 .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src => src.Timestamp))
                 .ForMember(dest => dest.LicensePlate, opt => opt.MapFrom(src => src.UserPermit.Vehicle.PlateNumber))
-                .ForMember(dest => dest.LogType, opt => opt.MapFrom(src => src.Type));
+                .ForMember(dest => dest.LogType, opt => opt.MapFrom(src => src.Type))
+                .ForMember(dest => dest.PermitName, opt => opt.MapFrom(src => src.UserPermit.Permit.Name));
         }
     }
 }

@@ -12,10 +12,9 @@ namespace eCampusGuard.Core.Entities
 		public int Occupied { get; set; }
 		public int Capacity { get; set; }
 		public int AreaId { get; set; }
+        public DateTime Expiry { get; set; }
         public virtual Area Area { get; set; }
         public virtual IEnumerable<UserPermit> UserPermits { get; set; }
-        public virtual IEnumerable<UpdateRequest> UpdateRequests { get; set; }
-
     }
 }
 

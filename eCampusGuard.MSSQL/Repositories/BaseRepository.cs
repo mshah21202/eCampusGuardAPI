@@ -33,18 +33,24 @@ namespace eCampusGuard.MSSQL.Repositories
             return query.ToList();
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync(string[] includes = null, Expression<Func<T, object>> orderBy = null, string orderByDirection = OrderBy.Ascending)
+        public async Task<IEnumerable<T>> GetAllAsync(string[] includes = null, Expression<Func<T, object>> orderBy = null, string orderByDirection = OrderBy.Ascending, bool tracking = false)
         {
             IQueryable<T> query = _context.Set<T>();
             if (includes != null)
                 foreach (var incluse in includes)
                     query = query.Include(incluse);
+
             if (orderBy != null)
             {
                 if (orderByDirection == OrderBy.Ascending)
                     query = query.OrderBy(orderBy);
                 else
                     query = query.OrderByDescending(orderBy);
+            }
+
+            if (!tracking)
+            {
+                query.AsNoTracking();
             }
 
             return await query.ToListAsync();

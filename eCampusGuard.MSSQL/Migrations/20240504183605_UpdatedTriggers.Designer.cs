@@ -12,8 +12,8 @@ using eCampusGuard.MSSQL;
 namespace eCampusGuard.MSSQL.Migrations
 {
     [DbContext(typeof(SQLDataContext))]
-    [Migration("20240420195356_UpdatedUserPermitTrigger")]
-    partial class UpdatedUserPermitTrigger
+    [Migration("20240504183605_UpdatedTriggers")]
+    partial class UpdatedTriggers
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -124,7 +124,7 @@ namespace eCampusGuard.MSSQL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("PermitId")
+                    b.Property<int>("AreaId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Timestamp")
@@ -133,21 +133,21 @@ namespace eCampusGuard.MSSQL.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("VehicleId")
+                    b.Property<int>("UserPermitId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PermitId");
+                    b.HasIndex("AreaId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserPermitId");
 
-                    b.HasIndex("VehicleId");
+                    b.ToTable("AccessLogs", t =>
+                        {
+                            t.HasTrigger("LC_TRIGGER_AFTER_INSERT_ACCESSLOG");
+                        });
 
-                    b.ToTable("AccessLogs");
+                    b.HasAnnotation("LC_TRIGGER_AFTER_INSERT_ACCESSLOG", "CREATE TRIGGER LC_TRIGGER_AFTER_INSERT_ACCESSLOG ON \"AccessLogs\" AFTER Insert AS\r\nBEGIN\r\n  DECLARE @NewAreaId INT\r\n  DECLARE InsertedAccessLogCursor CURSOR LOCAL FOR SELECT AreaId FROM Inserted\r\n  OPEN InsertedAccessLogCursor\r\n  FETCH NEXT FROM InsertedAccessLogCursor INTO @NewAreaId\r\n  WHILE @@FETCH_STATUS = 0\r\n  BEGIN\r\n    UPDATE dbo.Areas SET CurrentOccupied = dbo.CURR_OCCUPIED(@NewAreaId) WHERE dbo.Areas.Id = @NewAreaId\r\n    FETCH NEXT FROM InsertedAccessLogCursor INTO @NewAreaId\r\n  END\r\n  CLOSE InsertedAccessLogCursor DEALLOCATE InsertedAccessLogCursor\r\nEND");
                 });
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.AppRole", b =>
@@ -286,6 +286,9 @@ namespace eCampusGuard.MSSQL.Migrations
                     b.Property<int>("Capacity")
                         .HasColumnType("int");
 
+                    b.Property<int>("CurrentOccupied")
+                        .HasColumnType("int");
+
                     b.Property<string>("Gate")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -348,6 +351,9 @@ namespace eCampusGuard.MSSQL.Migrations
                     b.Property<int>("Days")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("Expiry")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -362,7 +368,12 @@ namespace eCampusGuard.MSSQL.Migrations
 
                     b.HasIndex("AreaId");
 
-                    b.ToTable("Permits");
+                    b.ToTable("Permits", t =>
+                        {
+                            t.HasTrigger("LC_TRIGGER_AFTER_UPDATE_PERMIT");
+                        });
+
+                    b.HasAnnotation("LC_TRIGGER_AFTER_UPDATE_PERMIT", "CREATE TRIGGER LC_TRIGGER_AFTER_UPDATE_PERMIT ON \"Permits\" AFTER Update AS\r\nBEGIN\r\n  DECLARE @NewId INT, @NewAreaId INT, @OldId INT, @OldAreaId INT\r\n  DECLARE InsertedPermitCursor CURSOR LOCAL FOR SELECT Id, AreaId FROM Inserted\r\n  OPEN InsertedPermitCursor DECLARE DeletedPermitCursor CURSOR LOCAL FOR SELECT Id, AreaId FROM Deleted\r\n  OPEN DeletedPermitCursor\r\n  FETCH NEXT FROM InsertedPermitCursor INTO @NewId, @NewAreaId FETCH NEXT FROM DeletedPermitCursor INTO @OldId, @OldAreaId\r\n  WHILE @@FETCH_STATUS = 0\r\n  BEGIN\r\n    UPDATE dbo.Areas SET Occupied = (SELECT SUM(Occupied) FROM dbo.Permits WHERE Id = @NewId) WHERE dbo.Areas.Id = @NewAreaId\r\n    UPDATE dbo.Areas SET Occupied = (SELECT SUM(Occupied) FROM dbo.Permits WHERE Id = @OldId) WHERE dbo.Areas.Id = @OldAreaId\r\n    FETCH NEXT FROM InsertedPermitCursor INTO @NewId, @NewAreaId FETCH NEXT FROM DeletedPermitCursor INTO @OldId, @OldAreaId\r\n  END\r\n  CLOSE InsertedPermitCursor DEALLOCATE InsertedPermitCursor CLOSE DeletedPermitCursor DEALLOCATE DeletedPermitCursor\r\nEND");
                 });
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.PermitApplication", b =>
@@ -387,6 +398,10 @@ namespace eCampusGuard.MSSQL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PhoneNumberCountry")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("SiblingsCount")
                         .HasColumnType("int");
 
@@ -394,6 +409,9 @@ namespace eCampusGuard.MSSQL.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserPermitId")
                         .HasColumnType("int");
 
                     b.Property<int>("VehicleId")
@@ -408,12 +426,16 @@ namespace eCampusGuard.MSSQL.Migrations
 
                     b.HasIndex("UserId");
 
+                    b.HasIndex("UserPermitId")
+                        .IsUnique()
+                        .HasFilter("[UserPermitId] IS NOT NULL");
+
                     b.HasIndex("VehicleId");
 
                     b.ToTable("PermitApplications");
                 });
 
-            modelBuilder.Entity("eCampusGuard.Core.Entities.TransferRequest", b =>
+            modelBuilder.Entity("eCampusGuard.Core.Entities.UpdateRequest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -421,55 +443,77 @@ namespace eCampusGuard.MSSQL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("FromUserId")
+                    b.Property<string>("DrivingLicenseImgPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumberCountry")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int>("PermitId")
+                    b.Property<int>("UpdatedVehicleId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ToUserId")
+                    b.Property<int>("UserPermitId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FromUserId");
+                    b.HasIndex("UpdatedVehicleId");
 
-                    b.HasIndex("PermitId");
+                    b.HasIndex("UserPermitId");
 
-                    b.HasIndex("ToUserId");
-
-                    b.ToTable("TransferRequests");
+                    b.ToTable("UpdateRequests");
                 });
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.UserPermit", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("PermitApplicationId")
                         .HasColumnType("int");
 
                     b.Property<int>("PermitId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("Expiry")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.Property<int>("VehicleId")
                         .HasColumnType("int");
 
-                    b.HasKey("UserId", "PermitId");
+                    b.HasKey("Id");
 
                     b.HasIndex("PermitId");
+
+                    b.HasIndex("UserId");
 
                     b.HasIndex("VehicleId");
 
                     b.ToTable("UserPermits", t =>
                         {
+                            t.HasTrigger("LC_TRIGGER_AFTER_DELETE_USERPERMIT");
+
                             t.HasTrigger("LC_TRIGGER_AFTER_INSERT_USERPERMIT");
+
+                            t.HasTrigger("LC_TRIGGER_AFTER_UPDATE_USERPERMIT");
                         });
 
-                    b.HasAnnotation("LC_TRIGGER_AFTER_INSERT_USERPERMIT", "CREATE TRIGGER LC_TRIGGER_AFTER_INSERT_USERPERMIT ON \"UserPermits\" AFTER Insert AS\r\nBEGIN\r\n  DECLARE @NewPermitId INT, @NewStatus INT\r\n  DECLARE InsertedUserPermitCursor CURSOR LOCAL FOR SELECT PermitId, Status FROM Inserted\r\n  OPEN InsertedUserPermitCursor\r\n  FETCH NEXT FROM InsertedUserPermitCursor INTO @NewPermitId, @NewStatus\r\n  WHILE @@FETCH_STATUS = 0\r\n  BEGIN\r\n    IF (@NewStatus = 0)\r\n    UPDATE dbo.Permits SET Occupied = (SELECT COUNT(*) FROM dbo.UserPermits WHERE PermitId = @NewPermitId AND [Status] = 0) WHERE dbo.Permits.Id = @NewPermitId\r\n    FETCH NEXT FROM InsertedUserPermitCursor INTO @NewPermitId, @NewStatus\r\n  END\r\n  CLOSE InsertedUserPermitCursor DEALLOCATE InsertedUserPermitCursor\r\nEND");
+                    b
+                        .HasAnnotation("LC_TRIGGER_AFTER_DELETE_USERPERMIT", "CREATE TRIGGER LC_TRIGGER_AFTER_DELETE_USERPERMIT ON \"UserPermits\" AFTER Delete AS\r\nBEGIN\r\n  DECLARE @OldPermitId INT\r\n  DECLARE DeletedUserPermitCursor CURSOR LOCAL FOR SELECT PermitId FROM Deleted\r\n  OPEN DeletedUserPermitCursor\r\n  FETCH NEXT FROM DeletedUserPermitCursor INTO @OldPermitId\r\n  WHILE @@FETCH_STATUS = 0\r\n  BEGIN\r\n    UPDATE dbo.Permits SET Occupied = (SELECT COUNT(*) FROM dbo.UserPermits WHERE PermitId = @OldPermitId AND [Status] = 0) WHERE dbo.Permits.Id = @OldPermitId\r\n    FETCH NEXT FROM DeletedUserPermitCursor INTO @OldPermitId\r\n  END\r\n  CLOSE DeletedUserPermitCursor DEALLOCATE DeletedUserPermitCursor\r\nEND")
+                        .HasAnnotation("LC_TRIGGER_AFTER_INSERT_USERPERMIT", "CREATE TRIGGER LC_TRIGGER_AFTER_INSERT_USERPERMIT ON \"UserPermits\" AFTER Insert AS\r\nBEGIN\r\n  DECLARE @NewPermitId INT, @NewStatus INT\r\n  DECLARE InsertedUserPermitCursor CURSOR LOCAL FOR SELECT PermitId, Status FROM Inserted\r\n  OPEN InsertedUserPermitCursor\r\n  FETCH NEXT FROM InsertedUserPermitCursor INTO @NewPermitId, @NewStatus\r\n  WHILE @@FETCH_STATUS = 0\r\n  BEGIN\r\n    IF (@NewStatus = 0)\r\n    UPDATE dbo.Permits SET Occupied = (SELECT COUNT(*) FROM dbo.UserPermits WHERE PermitId = @NewPermitId AND [Status] = 0) WHERE dbo.Permits.Id = @NewPermitId\r\n    FETCH NEXT FROM InsertedUserPermitCursor INTO @NewPermitId, @NewStatus\r\n  END\r\n  CLOSE InsertedUserPermitCursor DEALLOCATE InsertedUserPermitCursor\r\nEND")
+                        .HasAnnotation("LC_TRIGGER_AFTER_UPDATE_USERPERMIT", "CREATE TRIGGER LC_TRIGGER_AFTER_UPDATE_USERPERMIT ON \"UserPermits\" AFTER Update AS\r\nBEGIN\r\n  DECLARE @NewPermitId INT, @OldPermitId INT\r\n  DECLARE InsertedUserPermitCursor CURSOR LOCAL FOR SELECT PermitId FROM Inserted\r\n  OPEN InsertedUserPermitCursor DECLARE DeletedUserPermitCursor CURSOR LOCAL FOR SELECT PermitId FROM Deleted\r\n  OPEN DeletedUserPermitCursor\r\n  FETCH NEXT FROM InsertedUserPermitCursor INTO @NewPermitId FETCH NEXT FROM DeletedUserPermitCursor INTO @OldPermitId\r\n  WHILE @@FETCH_STATUS = 0\r\n  BEGIN\r\n    IF (@OldPermitId <> @NewPermitId)\r\n    UPDATE dbo.Permits SET Occupied = (SELECT COUNT(*) FROM dbo.UserPermits WHERE PermitId = @NewPermitId AND [Status] = 0) WHERE dbo.Permits.Id = @NewPermitId\r\n    UPDATE dbo.Permits SET Occupied = (SELECT COUNT(*) FROM dbo.UserPermits WHERE PermitId = @OldPermitId AND [Status] = 0) WHERE dbo.Permits.Id = @OldPermitId\r\n    FETCH NEXT FROM InsertedUserPermitCursor INTO @NewPermitId FETCH NEXT FROM DeletedUserPermitCursor INTO @OldPermitId\r\n  END\r\n  CLOSE InsertedUserPermitCursor DEALLOCATE InsertedUserPermitCursor CLOSE DeletedUserPermitCursor DEALLOCATE DeletedUserPermitCursor\r\nEND");
                 });
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.Vehicle", b =>
@@ -555,29 +599,21 @@ namespace eCampusGuard.MSSQL.Migrations
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.AccessLog", b =>
                 {
-                    b.HasOne("eCampusGuard.Core.Entities.Permit", "Permit")
+                    b.HasOne("eCampusGuard.Core.Entities.Area", "Area")
                         .WithMany("AccessLogs")
-                        .HasForeignKey("PermitId")
+                        .HasForeignKey("AreaId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("eCampusGuard.Core.Entities.AppUser", "User")
+                    b.HasOne("eCampusGuard.Core.Entities.UserPermit", "UserPermit")
                         .WithMany("AccessLogs")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("UserPermitId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("eCampusGuard.Core.Entities.Vehicle", "Vehicle")
-                        .WithMany("AccessLogs")
-                        .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                    b.Navigation("Area");
 
-                    b.Navigation("Permit");
-
-                    b.Navigation("User");
-
-                    b.Navigation("Vehicle");
+                    b.Navigation("UserPermit");
                 });
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.AppUserRole", b =>
@@ -591,7 +627,7 @@ namespace eCampusGuard.MSSQL.Migrations
                     b.HasOne("eCampusGuard.Core.Entities.AppUser", "User")
                         .WithMany("UserRoles")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Role");
@@ -635,6 +671,11 @@ namespace eCampusGuard.MSSQL.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("eCampusGuard.Core.Entities.UserPermit", "UserPermit")
+                        .WithOne("PermitApplication")
+                        .HasForeignKey("eCampusGuard.Core.Entities.PermitApplication", "UserPermitId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("eCampusGuard.Core.Entities.Vehicle", "Vehicle")
                         .WithMany("PermitApplications")
                         .HasForeignKey("VehicleId")
@@ -645,34 +686,28 @@ namespace eCampusGuard.MSSQL.Migrations
 
                     b.Navigation("User");
 
+                    b.Navigation("UserPermit");
+
                     b.Navigation("Vehicle");
                 });
 
-            modelBuilder.Entity("eCampusGuard.Core.Entities.TransferRequest", b =>
+            modelBuilder.Entity("eCampusGuard.Core.Entities.UpdateRequest", b =>
                 {
-                    b.HasOne("eCampusGuard.Core.Entities.AppUser", "FromUser")
-                        .WithMany("FromTransferRequests")
-                        .HasForeignKey("FromUserId")
+                    b.HasOne("eCampusGuard.Core.Entities.Vehicle", "UpdatedVehicle")
+                        .WithMany("UpdateRequests")
+                        .HasForeignKey("UpdatedVehicleId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("eCampusGuard.Core.Entities.Permit", "Permit")
-                        .WithMany("TransferRequests")
-                        .HasForeignKey("PermitId")
+                    b.HasOne("eCampusGuard.Core.Entities.UserPermit", "UserPermit")
+                        .WithMany("UpdateRequests")
+                        .HasForeignKey("UserPermitId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("eCampusGuard.Core.Entities.AppUser", "ToUser")
-                        .WithMany("ToTransferRequests")
-                        .HasForeignKey("ToUserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                    b.Navigation("UpdatedVehicle");
 
-                    b.Navigation("FromUser");
-
-                    b.Navigation("Permit");
-
-                    b.Navigation("ToUser");
+                    b.Navigation("UserPermit");
                 });
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.UserPermit", b =>
@@ -720,15 +755,9 @@ namespace eCampusGuard.MSSQL.Migrations
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.AppUser", b =>
                 {
-                    b.Navigation("AccessLogs");
-
-                    b.Navigation("FromTransferRequests");
-
                     b.Navigation("Notifications");
 
                     b.Navigation("PermitApplications");
-
-                    b.Navigation("ToTransferRequests");
 
                     b.Navigation("UserPermits");
 
@@ -739,23 +768,31 @@ namespace eCampusGuard.MSSQL.Migrations
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.Area", b =>
                 {
+                    b.Navigation("AccessLogs");
+
                     b.Navigation("Permits");
                 });
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.Permit", b =>
                 {
+                    b.Navigation("UserPermits");
+                });
+
+            modelBuilder.Entity("eCampusGuard.Core.Entities.UserPermit", b =>
+                {
                     b.Navigation("AccessLogs");
 
-                    b.Navigation("TransferRequests");
+                    b.Navigation("PermitApplication")
+                        .IsRequired();
 
-                    b.Navigation("UserPermits");
+                    b.Navigation("UpdateRequests");
                 });
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.Vehicle", b =>
                 {
-                    b.Navigation("AccessLogs");
-
                     b.Navigation("PermitApplications");
+
+                    b.Navigation("UpdateRequests");
 
                     b.Navigation("UserPermits");
                 });

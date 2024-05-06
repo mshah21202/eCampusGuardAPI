@@ -45,7 +45,8 @@ namespace eCampusGuard.Core.Entities
 		public int SiblingsCount { get; set; }
 		public AcademicYear Year { get; set; }
 		public string LicenseImgPath { get; set; }
-		public string PhoneNumber { get; set; }
+        public string PhoneNumberCountry { get; set; }
+        public string PhoneNumber { get; set; }
 		public PermitApplicationStatus Status { get; set; } = PermitApplicationStatus.Pending;
 
         public virtual AppUser User { get; set; }
@@ -56,6 +57,9 @@ namespace eCampusGuard.Core.Entities
 
         public virtual Permit Permit { get; set; }
 		public int PermitId { get; set; }
+
+		public int? UserPermitId { get; set; }
+		public virtual UserPermit UserPermit { get; set; }
 	}
 }
 

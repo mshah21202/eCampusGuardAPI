@@ -5,7 +5,7 @@
 namespace eCampusGuard.MSSQL.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedCascadeDelete : Migration
+    public partial class UpdatedAppUsers : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,8 +19,7 @@ namespace eCampusGuard.MSSQL.Migrations
                 table: "AspNetUserRoles",
                 column: "UserId",
                 principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                principalColumn: "Id");
         }
 
         /// <inheritdoc />
@@ -35,7 +34,8 @@ namespace eCampusGuard.MSSQL.Migrations
                 table: "AspNetUserRoles",
                 column: "UserId",
                 principalTable: "AspNetUsers",
-                principalColumn: "Id");
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
         }
     }
 }

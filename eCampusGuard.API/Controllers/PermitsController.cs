@@ -82,7 +82,8 @@ namespace eCampusGuard.API.Controllers
                     Days = permitDto.Days,
                     Price = permitDto.Price,
                     Capacity = permitDto.Capacity,
-                    Area = area
+                    Area = area,
+                    Expiry = permitDto.Expiry
                 };
 
                 await _unitOfWork.Permits.AddAsync(permit);
@@ -137,7 +138,8 @@ namespace eCampusGuard.API.Controllers
                     Days = permitDto.Days,
                     Price = permitDto.Price,
                     Capacity = permitDto.Capacity,
-                    Area = area
+                    Area = area,
+                    Expiry = permitDto.Expiry
                 };
 
                 _unitOfWork.Permits.Update(permit);

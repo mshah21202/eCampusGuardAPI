@@ -1,14 +1,11 @@
 ﻿using System.Reflection;
 using eCampusGuard.API.Data;
 using eCampusGuard.API.Extensions;
+using eCampusGuard.API.Helpers;
 using eCampusGuard.Core.Entities;
 using eCampusGuard.Core.Interfaces;
 using eCampusGuard.MSSQL;
-using Microsoft.AspNetCore.Http.Json;
-using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +21,8 @@ builder.Services.AddCors(options =>
     });
 
 });
+
+builder.Services.AddSignalR().AddJsonProtocol();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -71,6 +70,8 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
+app.MapHub<AreaHub>("/Area/feed/{id}");
+
 app.MapControllers();
 
 using var scope = app.Services.CreateScope();
@@ -83,7 +84,8 @@ try
     var unitOfWork = services.GetRequiredService<IUnitOfWork>();
     var userManager = services.GetRequiredService<UserManager<AppUser>>();
     var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
-    await Seed.SeedUsersAndRoles(userManager, roleManager, unitOfWork);
+    var seed = new Seed(userManager, roleManager, unitOfWork);
+    await seed.SeedData();
 }
 catch (Exception ex)
 {

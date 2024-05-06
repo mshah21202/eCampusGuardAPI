@@ -98,6 +98,18 @@ namespace eCampusGuard.API.Controllers
         [HttpPost("apply")]
         public async Task<ActionResult<ResponseDto>> Apply(CreatePermitApplicationDto permitApplicationDto)
         {
+            if (await _unitOfWork.PermitApplications.CountAsync(p =>
+            p.UserId == User.GetUserId() &&
+            (p.Status == PermitApplicationStatus.Pending ||
+            p.Status == PermitApplicationStatus.AwaitingPayment)) > 0)
+            {
+                return BadRequest(new ResponseDto
+                {
+                    ResponseCode = ResponseCode.Failed,
+                    Message = "You already have a pending application."
+                });
+            }
+
             try
             {
                 PermitApplication application = _mapper.Map<PermitApplication>(permitApplicationDto);
@@ -233,25 +245,36 @@ namespace eCampusGuard.API.Controllers
 
                 if (application == null)
                 {
-                    return Ok(new ResponseDto
+                    return BadRequest(new ResponseDto
                     {
                         ResponseCode = ResponseCode.Failed,
                         Message = "Could not find application with id " + id
                     });
                 }
 
-                // TODO: Create a UserPermit
+                if (application.Status != PermitApplicationStatus.AwaitingPayment)
+                {
+                    return BadRequest(new ResponseDto
+                    {
+                        ResponseCode = ResponseCode.Failed,
+                        Message = "Application's status is not awaiting payment"
+                    });
+                }
+
                 var userPermit = new UserPermit
                 {
                     Status = UserPermitStatus.Valid,
                     User = application.User,
                     Permit = application.Permit,
                     Vehicle = application.Vehicle,
+                    PermitApplication = application
                 };
 
                 await _unitOfWork.UserPermits.AddAsync(userPermit);
 
                 application.Status = PermitApplicationStatus.Paid;
+                application.UserPermit = userPermit;
+
                 _unitOfWork.PermitApplications.Update(application);
 
                 if (await _unitOfWork.CompleteAsync() > 0)

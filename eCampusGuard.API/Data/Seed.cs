@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 using eCampusGuard.Core.Entities;
 using eCampusGuard.Core.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -8,12 +9,21 @@ namespace eCampusGuard.API.Data
 {
     public class Seed
     {
-        public static async Task SeedUsersAndRoles(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager, IUnitOfWork unitOfWork)
-        {
-            if (await unitOfWork.AppRoles.CountAsync() == 0 || await unitOfWork.AppUsers.CountAsync() == 0)
-            {
+        private readonly UserManager<AppUser> _userManager;
+        private readonly RoleManager<AppRole> _roleManager;
+        private readonly IUnitOfWork _unitOfWork;
 
-                var roles = new List<AppRole>
+
+        public Seed(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager, IUnitOfWork unitOfWork)
+        {
+            _userManager = userManager;
+            _roleManager = roleManager;
+            _unitOfWork = unitOfWork;
+        }
+
+        private async Task SeedRoles()
+        {
+            var roles = new List<AppRole>
             {
                 new AppRole
                 {
@@ -42,50 +52,83 @@ namespace eCampusGuard.API.Data
                 },
             };
 
-                foreach (var role in roles)
+            foreach (var role in roles)
+            {
+                await _roleManager.CreateAsync(role);
+            }
+        }
+
+        private List<AppUser> GetUsersFromJson()
+        {
+            var jsonText = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "data/mock_users.json"));
+
+            List<Dictionary<string, string>> usersDict = JsonSerializer.Deserialize<List<Dictionary<string, string>>>(jsonText, options: new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            });
+
+            List<AppUser> users = new();
+
+            foreach (var user in usersDict)
+            {
+                users.Add(new AppUser
                 {
-                    await roleManager.CreateAsync(role);
+                    Name = user["name"],
+                    UserName = user["userName"]
+                });
+            }
+
+            return users;
+        }
+
+        private async Task SeedUsers()
+        {
+            try
+            {
+                var users = GetUsersFromJson();
+
+                foreach (var user in users)
+                {
+                    var userr = new AppUser
+                    {
+                        Name = user.Name,
+                        UserName = user.UserName
+                    };
+                    await _userManager.CreateAsync(userr, "$hahin1234B_");
+                    await _userManager.AddToRoleAsync(userr, "Member");
                 }
 
-                roles[0] = await unitOfWork.AppRoles.FindAsync(r => r.Name == roles[0].Name);
-                roles[1] = await unitOfWork.AppRoles.FindAsync(r => r.Name == roles[1].Name);
-                roles[2] = await unitOfWork.AppRoles.FindAsync(r => r.Name == roles[2].Name);
-
-                var userr = new AppUser
-                {
-                    Name = "Mohamad Shahin",
-                    UserName = "20200461"
-                };
-
-                var adminUserr = new AppUser
+                // Admin and gate staff
+                var adminUser = new AppUser
                 {
                     Name = "Admin",
                     UserName = "21202"
                 };
 
-                var gateStaffUserr = new AppUser
+                var gateStaffUser = new AppUser
                 {
                     Name = "Gate Staff",
                     UserName = "20212"
 
                 };
 
+                await _userManager.CreateAsync(adminUser, "$hahin1234B_");
+                await _userManager.AddToRoleAsync(adminUser, "Admin");
 
-                await userManager.CreateAsync(userr, "$hahin1234B_");
-                await userManager.AddToRoleAsync(userr, roles[0].Name);
 
-                await userManager.CreateAsync(adminUserr, "$hahin1234B_");
-                await userManager.AddToRoleAsync(adminUserr, roles[1].Name);
-
-                await userManager.CreateAsync(gateStaffUserr, "$hahin1234B_");
-                await userManager.AddToRoleAsync(gateStaffUserr, roles[2].Name);
+                await _userManager.CreateAsync(gateStaffUser, "$hahin1234B_");
+                await _userManager.AddToRoleAsync(gateStaffUser, "GateStaff");
 
             }
-            var user = await unitOfWork.AppUsers.FindAsync(u => u.UserName == "20200461");
-            var adminUser = await unitOfWork.AppUsers.FindAsync(u => u.UserName == "21202");
-            var gateStaffUser = await unitOfWork.AppUsers.FindAsync(u => u.UserName == "20212");
+            catch (Exception e)
+            {
+                System.Console.WriteLine(e.Message);
+            }
 
-            // Create areas
+        }
+
+        private async Task SeedAreas()
+        {
             var itArea = new Area
             {
                 Name = "IT",
@@ -110,16 +153,22 @@ namespace eCampusGuard.API.Data
                 Capacity = 200
             };
 
-            if (await unitOfWork.Areas.CountAsync() == 0)
+            itArea = await _unitOfWork.Areas.AddAsync(itArea);
+            engArea = await _unitOfWork.Areas.AddAsync(engArea);
+            rssArea = await _unitOfWork.Areas.AddAsync(rssArea);
+
+            if (await _unitOfWork.CompleteAsync() == 0)
             {
-                itArea = await unitOfWork.Areas.AddAsync(itArea);
-                engArea = await unitOfWork.Areas.AddAsync(engArea);
-                rssArea = await unitOfWork.Areas.AddAsync(rssArea);
+                System.Console.WriteLine("Something went wrong with seeding areas");
             }
+        }
 
-            await unitOfWork.CompleteAsync();
+        private async Task SeedPermits()
+        {
+            var itArea = await _unitOfWork.Areas.FindAsync((a) => a.Name == "IT");
+            var engArea = await _unitOfWork.Areas.FindAsync((a) => a.Name == "Engineering");
+            var rssArea = await _unitOfWork.Areas.FindAsync((a) => a.Name == "RSS");
 
-            // Create permits
             var permits = new List<Permit>
             {
                 new Permit
@@ -129,7 +178,8 @@ namespace eCampusGuard.API.Data
                     Price = 40,
                     Occupied = 0,
                     Capacity = 100,
-                    Area = itArea
+                    Area = itArea,
+                    Expiry = DateTime.Now.AddDays(7)
                 },
                 new Permit
                 {
@@ -138,7 +188,8 @@ namespace eCampusGuard.API.Data
                     Price = 40,
                     Occupied = 0,
                     Capacity = 100,
-                    Area = itArea
+                    Area = itArea,
+                    Expiry = DateTime.Now.AddDays(7)
                 },
                 new Permit
                 {
@@ -147,7 +198,8 @@ namespace eCampusGuard.API.Data
                     Price = 40,
                     Occupied = 0,
                     Capacity = 100,
-                    Area = itArea
+                    Area = itArea,
+                    Expiry = DateTime.Now.AddDays(7)
                 },
                 new Permit
                 {
@@ -156,7 +208,8 @@ namespace eCampusGuard.API.Data
                     Price = 40,
                     Occupied = 0,
                     Capacity = 75,
-                    Area = engArea
+                    Area = engArea,
+                    Expiry = DateTime.Now.AddDays(7)
                 },
                 new Permit
                 {
@@ -165,7 +218,8 @@ namespace eCampusGuard.API.Data
                     Price = 40,
                     Occupied = 0,
                     Capacity = 90,
-                    Area = engArea
+                    Area = engArea,
+                    Expiry = DateTime.Now.AddDays(7)
                 },
                 new Permit
                 {
@@ -174,194 +228,109 @@ namespace eCampusGuard.API.Data
                     Price = 40,
                     Occupied = 0,
                     Capacity = 150,
-                    Area = engArea
+                    Area = engArea,
+                    Expiry = DateTime.Now.AddDays(7)
                 },
             };
 
-            if (await unitOfWork.Permits.CountAsync() == 0)
+            (await _unitOfWork.Permits.AddRangeAsync(permits)).ToList();
+
+            if (await _unitOfWork.CompleteAsync() == 0)
             {
-                permits = (await unitOfWork.Permits.AddRangeAsync(permits)).ToList();
+                System.Console.WriteLine("Something went wrong with seeding permits");
+            }
+        }
+
+        private List<Vehicle> GetVehiclesFromJson()
+        {
+            var jsonText = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "data/mock_vehicles.json"));
+
+            List<Vehicle> vehicles = JsonSerializer.Deserialize<List<Vehicle>>(jsonText, options: new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            });
+
+            return vehicles;
+        }
+
+        private async Task SeedVehicles()
+        {
+            var vehicles = GetVehiclesFromJson();
+
+            foreach (var vehicle in vehicles)
+            {
+                vehicle.User = await _unitOfWork.AppUsers.GetByIdAsync(vehicle.UserId);
+                await _unitOfWork.Vehicles.AddAsync(vehicle);
             }
 
-            await unitOfWork.CompleteAsync();
-
-            permits[0] = await unitOfWork.Permits.GetByIdAsync(7);
-
-            // Create permitApplications & vehicles
-
-            var vehicles = new List<Vehicle>
+            if (await _unitOfWork.CompleteAsync() == 0)
             {
-                new Vehicle
-                    {
-                        PlateNumber = "45-58864",
-                        Nationality = "JO",
-                        Make = "Hyundai",
-                        Model = "Sonata",
-                        Color = "White",
-                        Year = 2017,
-                        RegistrationDocImgPath = "",
-                        User = user
-                    }
-            };
+                System.Console.WriteLine("Something went wrong with seeding vehicles");
+            }
+        }
 
-            var permitApplications = new List<PermitApplication>
+        private List<PermitApplication> GetApplicationsFromJson()
+        {
+            var jsonText = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "data/mock_applications.json"));
+
+            List<PermitApplication> applications = JsonSerializer.Deserialize<List<PermitApplication>>(jsonText, options: new JsonSerializerOptions
             {
-                new PermitApplication
-                {
-                    AttendingDays = new List<bool> {true, true, true, true},
-                    SiblingsCount = 0,
-                    Year = AcademicYear.FirstYear,
-                    LicenseImgPath = "",
-                    PhoneNumber = "+962799551474",
-                    User = user,
-                    Vehicle = vehicles[0],
-                    Permit = permits[0]
-                },
-                new PermitApplication
-                {
-                    AttendingDays = new List<bool> {true, true, true, true},
-                    SiblingsCount = 0,
-                    Year = AcademicYear.FirstYear,
-                    LicenseImgPath = "",
-                    PhoneNumber = "+962799551474",
-                    User = user,
-                    Vehicle = vehicles[0],
-                    Permit = permits[0]
-                },
-                new PermitApplication
-                {
-                    AttendingDays = new List<bool> {true, true, true, true},
-                    SiblingsCount = 0,
-                    Year = AcademicYear.FirstYear,
-                    LicenseImgPath = "",
-                    PhoneNumber = "+962799551474",
-                    User = user,
-                    Vehicle = vehicles[0],
-                    Permit = permits[0]
-                },
-                new PermitApplication
-                {
-                    AttendingDays = new List<bool> {true, true, true, true},
-                    SiblingsCount = 0,
-                    Year = AcademicYear.FirstYear,
-                    LicenseImgPath = "",
-                    PhoneNumber = "+962799551474",
-                    User = user,
-                    Vehicle = vehicles[0],
-                    Permit = permits[0]
-                },
-                new PermitApplication
-                {
-                    AttendingDays = new List<bool> {true, true, true, true},
-                    SiblingsCount = 0,
-                    Year = AcademicYear.FirstYear,
-                    LicenseImgPath = "",
-                    PhoneNumber = "+962799551474",
-                    User = user,
-                    Vehicle = vehicles[0],
-                    Permit = permits[0]
-                },
-                new PermitApplication
-                {
-                    AttendingDays = new List<bool> {true, true, true, true},
-                    SiblingsCount = 0,
-                    Year = AcademicYear.FirstYear,
-                    LicenseImgPath = "",
-                    PhoneNumber = "+962799551474",
-                    User = user,
-                    Vehicle = vehicles[0],
-                    Permit = permits[0]
-                },
-                new PermitApplication
-                {
-                    AttendingDays = new List<bool> {true, true, true, true},
-                    SiblingsCount = 0,
-                    Year = AcademicYear.FirstYear,
-                    LicenseImgPath = "",
-                    PhoneNumber = "+962799551474",
-                    User = user,
-                    Vehicle = vehicles[0],
-                    Permit = permits[0]
-                },
-                new PermitApplication
-                {
-                    AttendingDays = new List<bool> {true, true, true, true},
-                    SiblingsCount = 0,
-                    Year = AcademicYear.FirstYear,
-                    LicenseImgPath = "",
-                    PhoneNumber = "+962799551474",
-                    User = user,
-                    Vehicle = vehicles[0],
-                    Permit = permits[0]
-                },
-                new PermitApplication
-                {
-                    AttendingDays = new List<bool> {true, true, true, true},
-                    SiblingsCount = 0,
-                    Year = AcademicYear.FirstYear,
-                    LicenseImgPath = "",
-                    PhoneNumber = "+962799551474",
-                    User = user,
-                    Vehicle = vehicles[0],
-                    Permit = permits[0]
-                },
-                new PermitApplication
-                {
-                    AttendingDays = new List<bool> {true, true, true, true},
-                    SiblingsCount = 0,
-                    Year = AcademicYear.FirstYear,
-                    LicenseImgPath = "",
-                    PhoneNumber = "+962799551474",
-                    User = user,
-                    Vehicle = vehicles[0],
-                    Permit = permits[0]
-                },
-                new PermitApplication
-                {
-                    AttendingDays = new List<bool> {true, true, true, true},
-                    SiblingsCount = 0,
-                    Year = AcademicYear.FirstYear,
-                    LicenseImgPath = "",
-                    PhoneNumber = "+962799551474",
-                    User = user,
-                    Vehicle = vehicles[0],
-                    Permit = permits[0]
-                },
-                new PermitApplication
-                {
-                    AttendingDays = new List<bool> {true, true, true, true},
-                    SiblingsCount = 0,
-                    Year = AcademicYear.FirstYear,
-                    LicenseImgPath = "",
-                    PhoneNumber = "+962799551474",
-                    User = user,
-                    Vehicle = vehicles[0],
-                    Permit = permits[0]
-                },
-                new PermitApplication
-                {
-                    AttendingDays = new List<bool> {true, true, true, true},
-                    SiblingsCount = 0,
-                    Year = AcademicYear.FirstYear,
-                    LicenseImgPath = "",
-                    PhoneNumber = "+962799551474",
-                    User = user,
-                    Vehicle = vehicles[0],
-                    Permit = permits[0]
-                },
-            };
+                PropertyNameCaseInsensitive = true,
+            });
 
+            return applications;
+        }
 
-            if (await unitOfWork.PermitApplications.CountAsync() < 10)
+        private async Task SeedApplications()
+        {
+            var applications = GetApplicationsFromJson();
+
+            foreach (var application in applications)
             {
-                permitApplications = (await unitOfWork.PermitApplications.AddRangeAsync(permitApplications)).ToList();
+                application.User = await _unitOfWork.AppUsers.GetByIdAsync(application.UserId);
+                application.Vehicle = await _unitOfWork.Vehicles.GetByIdAsync(application.VehicleId);
+                application.Permit = await _unitOfWork.Permits.GetByIdAsync(application.PermitId);
+
+                await _unitOfWork.PermitApplications.AddAsync(application);
             }
 
-            if (await unitOfWork.CompleteAsync() < 0)
+            if (await _unitOfWork.CompleteAsync() == 0)
             {
-                System.Console.WriteLine("Something went wrong with seeding");
+                System.Console.WriteLine("Something went wrong with seeding vehicles");
+            }
+        }
+
+        public async Task SeedData()
+        {
+            if (await _unitOfWork.AppRoles.CountAsync() < 3)
+            {
+                await SeedRoles();
             }
 
+            if (await _unitOfWork.AppUsers.CountAsync() < 20)
+            {
+                await SeedUsers();
+            }
+
+            if (await _unitOfWork.Areas.CountAsync() < 3)
+            {
+                await SeedAreas();
+            }
+
+            if (await _unitOfWork.Permits.CountAsync() < 6)
+            {
+                await SeedPermits();
+            }
+
+            if (await _unitOfWork.Vehicles.CountAsync() < 20)
+            {
+                await SeedVehicles();
+            }
+
+            if (await _unitOfWork.PermitApplications.CountAsync() < 20)
+            {
+                await SeedApplications();
+            }
         }
     }
 }

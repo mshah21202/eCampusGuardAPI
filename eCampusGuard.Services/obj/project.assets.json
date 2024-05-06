@@ -1295,6 +1295,8 @@
         "net7.0"
       ],
       "sources": {
+        "/Users/mohamadshahin/Projects/Laraue.EfCoreTriggers/src/Laraue.EfCoreTriggers.Common/bin/Release": {},
+        "/Users/mohamadshahin/Projects/Laraue.EfCoreTriggers/src/Laraue.EfCoreTriggers.SqlServer/bin/Release": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {

@@ -61,7 +61,7 @@ namespace eCampusGuard.API.Controllers
             }
             else // If the user is a normal user then add the relevant widgets
             {
-				if (user.UserPermits.Any(up => up.IsPermitValid() || up.Status == UserPermitStatus.Withdrawn))
+				if (user.UserPermits.Any(up => up.Status == UserPermitStatus.Valid || up.Status == UserPermitStatus.Withdrawn))
                 {
                     widgets.Add(HomeScreenWidget.PermitStatus);
                     widgets.Add(HomeScreenWidget.AccessLogs);

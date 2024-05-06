@@ -7,7 +7,7 @@ namespace eCampusGuard.Core.Interfaces
     public interface IBaseRepository<T> : IBaseRepositoryReadOnly<T> where T : class
     {
         Task<T?> GetByIdAsync(int id);
-        Task<IEnumerable<T>> GetAllAsync(string[] includes = null, Expression<Func<T, object>> orderBy = null, string orderByDirection = OrderBy.Ascending);
+        Task<IEnumerable<T>> GetAllAsync(string[] includes = null, Expression<Func<T, object>> orderBy = null, string orderByDirection = OrderBy.Ascending, bool tracking = false);
 
         Task<T?> FindAsync(Expression<Func<T, bool>> criteria, bool Tracking = false, string[] includes = null);
         Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> criteria, string[] includes = null, Expression<Func<T, object>> orderBy = null,

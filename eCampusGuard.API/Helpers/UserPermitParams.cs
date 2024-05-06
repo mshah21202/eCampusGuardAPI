@@ -34,9 +34,9 @@ namespace eCampusGuard.API.Helpers
         public Expression<Func<UserPermit, bool>> Criteria(bool isAdmin, AppUser user)
         {
             var predicate = PredicateBuilder.New<UserPermit>();
-            if (StudentId != null)
+            if (StudentId != null && isAdmin)
             {
-                predicate.And((p) => !isAdmin ? p.User.UserName == user.UserName : p.User.UserName == StudentId);
+                predicate.And((p) => p.User.UserName == StudentId);
             }
             else if (!isAdmin)
             {
@@ -58,7 +58,7 @@ namespace eCampusGuard.API.Helpers
                 predicate.And((p) => p.Status == Status);
             }
 
-            if (Status == null && StudentId == null && PlateNumber == null && PermitId == null)
+            if (isAdmin && Status == null && StudentId == null && PlateNumber == null && PermitId == null)
             {
                 predicate.Or((p) => true);
             }

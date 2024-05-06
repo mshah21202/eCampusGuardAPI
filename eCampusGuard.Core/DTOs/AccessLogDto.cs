@@ -1,5 +1,5 @@
 ﻿using System;
-using static eCampusGuard.Core.Entities.AccessLog;
+using eCampusGuard.Core.Entities;
 
 namespace eCampusGuard.Core.DTOs
 {
@@ -7,7 +7,8 @@ namespace eCampusGuard.Core.DTOs
 	{
 		public DateTime Timestamp { get; set; }
 		public string LicensePlate { get; set; }
-		public AccessLogType LogType { get; set; }
+		public string PermitName { get; set; }
+        public AccessLogType LogType { get; set; }
 	}
 }
 

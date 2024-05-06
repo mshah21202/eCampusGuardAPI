@@ -1,0 +1,342 @@
+[
+    {
+        "attendingDays": [
+            true,
+            true,
+            true,
+            true,
+            false
+        ],
+        "siblingsCount": 2,
+        "year": 1,
+        "licenseImgPath": "http://dummyimage.com/127x335.png/dddddd/000000",
+        "phoneNumber": "785605576",
+        "phoneNumberCountry": "JO",
+        "userId": 1,
+        "vehicleId": 1,
+        "permitId": 5
+    },
+    {
+        "attendingDays": [
+            true,
+            false,
+            false,
+            false,
+            false
+        ],
+        "siblingsCount": 0,
+        "year": 0,
+        "licenseImgPath": "http://dummyimage.com/105x349.png/cc0000/ffffff",
+        "phoneNumber": "793599453",
+        "phoneNumberCountry": "JO",
+        "userId": 2,
+        "vehicleId": 2,
+        "permitId": 3
+    },
+    {
+        "attendingDays": [
+            false,
+            true,
+            true,
+            false,
+            true
+        ],
+        "siblingsCount": 3,
+        "year": 3,
+        "licenseImgPath": "http://dummyimage.com/120x200.png/5fa2dd/ffffff",
+        "phoneNumber": "779818830",
+        "phoneNumberCountry": "JO",
+        "userId": 3,
+        "vehicleId": 3,
+        "permitId": 4
+    },
+    {
+        "attendingDays": [
+            true,
+            true,
+            false,
+            false,
+            true
+        ],
+        "siblingsCount": 3,
+        "year": 3,
+        "licenseImgPath": "http://dummyimage.com/167x382.png/ff4444/ffffff",
+        "phoneNumber": "786783061",
+        "phoneNumberCountry": "JO",
+        "userId": 4,
+        "vehicleId": 4,
+        "permitId": 6
+    },
+    {
+        "attendingDays": [
+            true,
+            false,
+            true,
+            false,
+            false
+        ],
+        "siblingsCount": 0,
+        "year": 1,
+        "licenseImgPath": "http://dummyimage.com/122x170.png/5fa2dd/ffffff",
+        "phoneNumber": "772362171",
+        "phoneNumberCountry": "JO",
+        "userId": 5,
+        "vehicleId": 5,
+        "permitId": 5
+    },
+    {
+        "attendingDays": [
+            true,
+            false,
+            true,
+            true,
+            true
+        ],
+        "siblingsCount": 1,
+        "year": 0,
+        "licenseImgPath": "http://dummyimage.com/108x425.png/cc0000/ffffff",
+        "phoneNumber": "775579270",
+        "phoneNumberCountry": "JO",
+        "userId": 6,
+        "vehicleId": 6,
+        "permitId": 3
+    },
+    {
+        "attendingDays": [
+            true,
+            false,
+            false,
+            true,
+            true
+        ],
+        "siblingsCount": 3,
+        "year": 0,
+        "licenseImgPath": "http://dummyimage.com/136x134.png/5fa2dd/ffffff",
+        "phoneNumber": "774143326",
+        "phoneNumberCountry": "JO",
+        "userId": 7,
+        "vehicleId": 7,
+        "permitId": 1
+    },
+    {
+        "attendingDays": [
+            true,
+            true,
+            true,
+            true,
+            false
+        ],
+        "siblingsCount": 0,
+        "year": 1,
+        "licenseImgPath": "http://dummyimage.com/186x343.png/dddddd/000000",
+        "phoneNumber": "793794094",
+        "phoneNumberCountry": "JO",
+        "userId": 8,
+        "vehicleId": 8,
+        "permitId": 6
+    },
+    {
+        "attendingDays": [
+            false,
+            true,
+            false,
+            true,
+            true
+        ],
+        "siblingsCount": 3,
+        "year": 2,
+        "licenseImgPath": "http://dummyimage.com/191x139.png/cc0000/ffffff",
+        "phoneNumber": "781238857",
+        "phoneNumberCountry": "JO",
+        "userId": 9,
+        "vehicleId": 9,
+        "permitId": 2
+    },
+    {
+        "attendingDays": [
+            true,
+            true,
+            true,
+            false,
+            false
+        ],
+        "siblingsCount": 0,
+        "year": 0,
+        "licenseImgPath": "http://dummyimage.com/183x215.png/dddddd/000000",
+        "phoneNumber": "780017198",
+        "phoneNumberCountry": "JO",
+        "userId": 10,
+        "vehicleId": 10,
+        "permitId": 4
+    },
+    {
+        "attendingDays": [
+            true,
+            false,
+            false,
+            false,
+            true
+        ],
+        "siblingsCount": 0,
+        "year": 3,
+        "licenseImgPath": "http://dummyimage.com/212x394.png/dddddd/000000",
+        "phoneNumber": "799148818",
+        "phoneNumberCountry": "JO",
+        "userId": 11,
+        "vehicleId": 11,
+        "permitId": 1
+    },
+    {
+        "attendingDays": [
+            false,
+            false,
+            true,
+            false,
+            true
+        ],
+        "siblingsCount": 0,
+        "year": 2,
+        "licenseImgPath": "http://dummyimage.com/138x263.png/5fa2dd/ffffff",
+        "phoneNumber": "782928596",
+        "phoneNumberCountry": "JO",
+        "userId": 12,
+        "vehicleId": 12,
+        "permitId": 4
+    },
+    {
+        "attendingDays": [
+            true,
+            false,
+            true,
+            true,
+            false
+        ],
+        "siblingsCount": 0,
+        "year": 2,
+        "licenseImgPath": "http://dummyimage.com/140x421.png/5fa2dd/ffffff",
+        "phoneNumber": "773855723",
+        "phoneNumberCountry": "JO",
+        "userId": 13,
+        "vehicleId": 13,
+        "permitId": 2
+    },
+    {
+        "attendingDays": [
+            true,
+            false,
+            true,
+            true,
+            false
+        ],
+        "siblingsCount": 1,
+        "year": 1,
+        "licenseImgPath": "http://dummyimage.com/144x120.png/ff4444/ffffff",
+        "phoneNumber": "770066838",
+        "phoneNumberCountry": "JO",
+        "userId": 14,
+        "vehicleId": 14,
+        "permitId": 5
+    },
+    {
+        "attendingDays": [
+            false,
+            false,
+            false,
+            true,
+            false
+        ],
+        "siblingsCount": 1,
+        "year": 2,
+        "licenseImgPath": "http://dummyimage.com/194x366.png/dddddd/000000",
+        "phoneNumber": "794691247",
+        "phoneNumberCountry": "JO",
+        "userId": 15,
+        "vehicleId": 15,
+        "permitId": 1
+    },
+    {
+        "attendingDays": [
+            true,
+            false,
+            false,
+            true,
+            true
+        ],
+        "siblingsCount": 3,
+        "year": 0,
+        "licenseImgPath": "http://dummyimage.com/238x323.png/5fa2dd/ffffff",
+        "phoneNumber": "782830268",
+        "phoneNumberCountry": "JO",
+        "userId": 16,
+        "vehicleId": 16,
+        "permitId": 3
+    },
+    {
+        "attendingDays": [
+            false,
+            true,
+            false,
+            false,
+            false
+        ],
+        "siblingsCount": 3,
+        "year": 0,
+        "licenseImgPath": "http://dummyimage.com/225x138.png/dddddd/000000",
+        "phoneNumber": "787634392",
+        "phoneNumberCountry": "JO",
+        "userId": 17,
+        "vehicleId": 17,
+        "permitId": 1
+    },
+    {
+        "attendingDays": [
+            false,
+            true,
+            false,
+            true,
+            true
+        ],
+        "siblingsCount": 1,
+        "year": 1,
+        "licenseImgPath": "http://dummyimage.com/239x386.png/5fa2dd/ffffff",
+        "phoneNumber": "772164067",
+        "phoneNumberCountry": "JO",
+        "userId": 18,
+        "vehicleId": 18,
+        "permitId": 6
+    },
+    {
+        "attendingDays": [
+            true,
+            true,
+            false,
+            true,
+            false
+        ],
+        "siblingsCount": 2,
+        "year": 2,
+        "licenseImgPath": "http://dummyimage.com/203x147.png/ff4444/ffffff",
+        "phoneNumber": "773400100",
+        "phoneNumberCountry": "JO",
+        "userId": 19,
+        "vehicleId": 19,
+        "permitId": 2
+    },
+    {
+        "attendingDays": [
+            false,
+            true,
+            false,
+            false,
+            true
+        ],
+        "siblingsCount": 0,
+        "year": 3,
+        "licenseImgPath": "http://dummyimage.com/248x211.png/5fa2dd/ffffff",
+        "phoneNumber": "789332285",
+        "phoneNumberCountry": "JO",
+        "userId": 20,
+        "vehicleId": 20,
+        "permitId": 6
+    }
+]

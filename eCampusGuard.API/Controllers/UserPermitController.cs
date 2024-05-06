@@ -31,7 +31,7 @@ namespace eCampusGuard.API.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet()]
-        public async Task<ActionResult<List<UserPermitDto>>> GetUserPermits([FromQuery] UserPermitParams userPermitParams)
+        public async Task<ActionResult<List<UserPermitDto>>> GetUserPermits([FromQuery]UserPermitParams userPermitParams)
         {
             var user = await _unitOfWork.AppUsers.GetByIdAsync(User.GetUserId());
 
@@ -50,6 +50,14 @@ namespace eCampusGuard.API.Controllers
                 userPermitParams.PageSize,
                 userPermitParams.PageNumber * userPermitParams.PageSize)).AsQueryable();
 
+            var count = await _unitOfWork.UserPermits.CountAsync(userPermitParams.Criteria(isAdmin, user));
+
+
+            Response.AddPaginationHeader(userPermitParams.PageNumber,
+                userPermitParams.PageSize,
+                count, (int)Math.Ceiling(count / (double)userPermitParams.PageSize));
+
+
             return Ok(userPermits.ProjectTo<UserPermitDto>(_mapper.ConfigurationProvider).ToList());
         }
 
@@ -66,11 +74,12 @@ namespace eCampusGuard.API.Controllers
                 up => (up.UserId == User.GetUserId()) &&
                 (up.Status == UserPermitStatus.Valid || up.Status == UserPermitStatus.Expired));
 
+
             if (user == null || userPermit == null)
             {
                 return NotFound();
             }
-            
+
 
             return Ok(_mapper.Map<UserPermitDto>(userPermit));
         }
@@ -78,7 +87,7 @@ namespace eCampusGuard.API.Controllers
         /// <summary>
         /// Gets user permit
         /// </summary>
-        /// <param name="id">Permit Id</param>
+        /// <param name="id">UserPermit Id</param>
         /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<UserPermitDto>> GetUserPermit(int id)
@@ -91,7 +100,7 @@ namespace eCampusGuard.API.Controllers
             }
 
             var roles = await _userManager.GetRolesAsync(user);
-            var userpermit = await _unitOfWork.UserPermits.FindAsync(a => (a.UserId == User.GetUserId() || roles.Any(r => r == "Admin")) && (a.PermitId == id), includes: new[] { "Vehicle", "Permit" });
+            var userpermit = await _unitOfWork.UserPermits.FindAsync(a => (a.UserId == User.GetUserId() || roles.Any(r => r == "Admin")) && (a.Id == id), includes: new[] { "Vehicle", "Permit" });
 
 
             // If user is not admin and user is trying to get permit of another user
@@ -100,7 +109,145 @@ namespace eCampusGuard.API.Controllers
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<PermitApplicationDto>(userpermit));
+            return Ok(_mapper.Map<UserPermitDto>(userpermit));
+        }
+
+        /// <summary>
+        /// Updates user permit details. Admin only
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="userPermitDto"></param>
+        /// <returns></returns>
+        [Authorize(Policy = "RequireAdminRole")]
+        [HttpPost("{id}")]
+        public async Task<ActionResult<ResponseDto>> UpdateUserPermit(int id, UpdateUserPermitDto userPermitDto)
+        {
+            try
+            {
+                var userPermit = await _unitOfWork.UserPermits.GetByIdAsync(id);
+
+                if (userPermit == null)
+                {
+                    return NotFound(new ResponseDto
+                    {
+                        ResponseCode = ResponseCode.Failed,
+                        Message = "User permit not found"
+                    });
+                }
+
+                userPermit.PermitApplication.PhoneNumber = userPermitDto.PhoneNumber;
+                userPermit.PermitApplication.PhoneNumberCountry = userPermitDto.PhoneNumberCountry;
+
+                if (userPermitDto.LicenseImgPath != null)
+                    userPermit.PermitApplication.LicenseImgPath = userPermitDto.LicenseImgPath;
+
+                userPermit.Vehicle.PlateNumber = userPermitDto.Vehicle.PlateNumber;
+                userPermit.Vehicle.Nationality = userPermitDto.Vehicle.Nationality;
+                userPermit.Vehicle.Make = userPermitDto.Vehicle.Make;
+                userPermit.Vehicle.Model = userPermitDto.Vehicle.Model;
+                userPermit.Vehicle.Color = userPermitDto.Vehicle.Color;
+                userPermit.Vehicle.Year = userPermitDto.Vehicle.Year;
+                if (userPermitDto.Vehicle.RegistrationDocImgPath != null)
+                    userPermit.Vehicle.RegistrationDocImgPath = userPermitDto.Vehicle.RegistrationDocImgPath;
+
+                if (userPermitDto.PermitId != null)
+                {
+                    var permit = await _unitOfWork.Permits.GetByIdAsync((int)userPermitDto.PermitId);
+                    if (permit != null)
+                    {
+                        userPermit.Permit = permit;
+                        userPermit.PermitId = permit.Id;
+                    }
+                }
+
+                _unitOfWork.UserPermits.Update(userPermit);
+
+                if (await _unitOfWork.CompleteAsync() > 0)
+                {
+                    return Ok(new ResponseDto
+                    {
+                        ResponseCode = ResponseCode.Success,
+                        Message = "Successfully updated user permit"
+                    });
+                }
+
+                return BadRequest(new ResponseDto
+                {
+                    ResponseCode = ResponseCode.Failed,
+                    Message = "Something went wrong"
+                });
+                
+            } catch (Exception e)
+            {
+                return BadRequest(new ResponseDto
+                {
+                    ResponseCode = ResponseCode.Failed,
+                    Message = e.Message
+                });
+            }
+        }
+
+        /// <summary>
+        /// Withdraws user permit. Admin only.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Authorize(Policy = "RequireAdminRole")]
+        [HttpPost("withdraw/{id}")]
+        public async Task<ActionResult<ResponseDto>> WithdrawPermit(int id)
+        {
+            try
+            {
+                var userPermit = await _unitOfWork.UserPermits.GetByIdAsync(id);
+
+                if (userPermit == null)
+                {
+                    return NotFound(new ResponseDto
+                    {
+                        ResponseCode = ResponseCode.Failed,
+                        Message = "User permit not found"
+                    });
+                }
+
+                if (!userPermit.IsPermitValid())
+                    return BadRequest(new ResponseDto
+                    {
+                        ResponseCode = ResponseCode.Failed,
+                        Message = "User permit already expired"
+                    });
+
+                if (userPermit.Status == UserPermitStatus.Valid)
+                {
+                    userPermit.Status = UserPermitStatus.Withdrawn;
+                } else
+                {
+                    userPermit.Status = UserPermitStatus.Valid;
+                }
+
+                _unitOfWork.UserPermits.Update(userPermit);
+
+                if (await _unitOfWork.CompleteAsync() > 0)
+                {
+                    return Ok(new ResponseDto
+                    {
+                        ResponseCode = ResponseCode.Success,
+                        Message = "Successfully updated user permit"
+                    });
+                }
+
+                return BadRequest(new ResponseDto
+                {
+                    ResponseCode = ResponseCode.Failed,
+                    Message = "Something went wrong"
+                });
+            } catch (Exception e)
+            {
+                return BadRequest(new ResponseDto
+                {
+                    ResponseCode = ResponseCode.Failed,
+                    Message = e.Message
+                });
+            }
         }
 
         /// <summary>
@@ -109,14 +256,18 @@ namespace eCampusGuard.API.Controllers
         /// <param name="id"></param>
         /// <param name="updateRequestDto"></param>
         /// <returns></returns>
-        [HttpPost("{id}/update")]
-        public async Task<ActionResult<ResponseDto>> SubmitUpdateRequest(int id, CreateUpdateRequestDto updateRequestDto)
+        [HttpPost("/update")]
+        public async Task<ActionResult<ResponseDto>> SubmitUpdateRequest(CreateUpdateRequestDto updateRequestDto)
         {
             try
             {
-                var userPermit = await _unitOfWork.UserPermits.FindAsync(up => up.PermitId == id && up.UserId == User.GetUserId());
+                var userPermit = await _unitOfWork.UserPermits.FirstOrDefaultAsync(
+               up => (up.UserId == User.GetUserId()) &&
+               (up.Status == UserPermitStatus.Valid || up.Status == UserPermitStatus.Expired));
 
-                if (userPermit == null)
+                var user = await _unitOfWork.AppUsers.GetByIdAsync(User.GetUserId());
+
+                if (userPermit == null || user == null)
                 {
                     return NotFound(new ResponseDto
                     {
@@ -125,24 +276,24 @@ namespace eCampusGuard.API.Controllers
                     });
                 }
 
-                var newPermit = await _unitOfWork.Permits.GetByIdAsync(updateRequestDto.PermitId);
-
-                if (newPermit == null)
-                {
-                    return NotFound(new ResponseDto
-                    {
-                        ResponseCode = ResponseCode.Failed,
-                        Message = "Could not find permit"
-                    });
-                }
+                
 
                 var vehicle = _mapper.Map<Vehicle>(updateRequestDto.Vehicle);
+                vehicle.User = user;
+
+                if (vehicle.RegistrationDocImgPath == null)
+                {
+                    vehicle.RegistrationDocImgPath = userPermit.Vehicle.RegistrationDocImgPath;
+                }
+
 
                 var updateRequest = new UpdateRequest
                 {
                     UserPermit = userPermit,
-                    NewPermit = newPermit,
                     UpdatedVehicle = vehicle,
+                    PhoneNumber = updateRequestDto.PhoneNumber,
+                    PhoneNumberCountry = updateRequestDto.PhoneNumberCountry,
+                    DrivingLicenseImgPath = updateRequestDto.DrivingLicenseImgPath
                 };
 
                 await _unitOfWork.UpdateRequests.AddAsync(updateRequest);
@@ -260,8 +411,6 @@ namespace eCampusGuard.API.Controllers
                     var userPermit = updateRequest.UserPermit;
 
                     userPermit.Vehicle = updateRequest.UpdatedVehicle;
-
-                    userPermit.Permit = updateRequest.NewPermit;
 
                     _unitOfWork.UserPermits.Update(userPermit);
 

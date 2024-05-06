@@ -45,7 +45,7 @@ namespace eCampusGuard.API.Helpers
 				predicate.And((p) => !isAdmin ? p.User.UserName == user.UserName : p.User.UserName == StudentId);
 			} else if (!isAdmin)
 			{
-				predicate.And((p) => p.User.UserName == user.UserName);
+				predicate.And((p) => p.User.Id == user.Id);
 			}
 
 			if (Name != null)
@@ -71,7 +71,7 @@ namespace eCampusGuard.API.Helpers
 				predicate.And((p) => p.Status == Status);
 			}
 
-			if (Status == null && PermitId == null && Year == null && Name == null && StudentId == null)
+			if (isAdmin && Status == null && PermitId == null && Year == null && Name == null && StudentId == null)
 			{
 				predicate.Or((p) => true);
 			}

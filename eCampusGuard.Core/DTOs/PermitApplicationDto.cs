@@ -13,10 +13,12 @@ namespace eCampusGuard.Core.DTOs
         public int SiblingsCount { get; set; }
         public AcademicYear AcademicYear { get; set; }
         public string? LicenseImgPath { get; set; }
+        public string PhoneNumberCountry { get; set; }
         public string PhoneNumber { get; set; }
         public PermitApplicationStatus Status { get; set; }
         public VehicleDto Vehicle { get; set; }
         public PermitDto Permit { get; set; }
+        public int? UserPermitId { get; set; }
     }
 }
 

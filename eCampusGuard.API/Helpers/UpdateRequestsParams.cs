@@ -40,7 +40,7 @@ namespace eCampusGuard.API.Helpers
                 predicate.And((p) => p.UserPermit.Vehicle.PlateNumber == PlateNumber);
             }
 
-            if (Status == null && PermitId == null && StudentId == null && PlateNumber == null)
+            if (isAdmin && Status == null && PermitId == null && StudentId == null && PlateNumber == null)
             {
                 predicate.Or((p) => true);
             }

@@ -13,6 +13,7 @@ namespace eCampusGuard.Core.DTOs
         public int Occupied { get; set; }
         public int Capacity { get; set; }
         public AreaDto Area { get; set; }
+        public DateTime Expiry { get; set; }
 
     }
 }

@@ -14,10 +14,12 @@ namespace eCampusGuard.Core.Entities
 
         public UpdateRequestStatus Status { get; set; } = UpdateRequestStatus.Pending;
 
-        public virtual UserPermit UserPermit { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string? PhoneNumberCountry { get; set; }
+        public string? DrivingLicenseImgPath { get; set; }
 
-        public virtual Permit NewPermit { get; set; }
-        public int NewPermitId { get; set; }
+        public int UserPermitId { get; set; }
+        public virtual UserPermit UserPermit { get; set; }
 
         public virtual Vehicle UpdatedVehicle { get; set; }
         public int UpdatedVehicleId { get; set; }
