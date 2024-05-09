@@ -73,7 +73,6 @@ namespace eCampusGuard.Services.AutoMapper
                 .ForMember(dest => dest.UserPermit, opt => opt.MapFrom(src => src.UserPermit))
                 .ForMember(dest => dest.UpdatedVehicle, opt => opt.MapFrom(src => src.UpdatedVehicle));
 
-
             CreateMap<AccessLog, AccessLogDto>()
                 .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src => src.Timestamp))
                 .ForMember(dest => dest.LicensePlate, opt => opt.MapFrom(src => src.UserPermit.Vehicle.PlateNumber))

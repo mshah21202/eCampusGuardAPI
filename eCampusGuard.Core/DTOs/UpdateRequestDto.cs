@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using eCampusGuard.Core.Entities;
 
 namespace eCampusGuard.Core.DTOs
@@ -7,8 +8,12 @@ namespace eCampusGuard.Core.DTOs
 	{
 		public UpdateRequestStatus Status { get; set; }
 		public UserPermitDto UserPermit { get; set; }
-		public PermitDto NewPermit { get; set; }
 		public VehicleDto UpdatedVehicle { get; set; }
-	}
+        [Required]
+        public string? PhoneNumber { get; set; }
+        [Required]
+        public string? PhoneNumberCountry { get; set; }
+        public string? DrivingLicenseImgPath { get; set; }
+    }
 }
 

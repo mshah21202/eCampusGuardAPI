@@ -313,7 +313,7 @@ namespace eCampusGuard.API.Controllers
                     return BadRequest(new ResponseDto
                     {
                         ResponseCode = ResponseCode.Success,
-                        Message = "User permit does not belong to this id"
+                        Message = "User permit does not belong to this area"
                     });
                 }
 
