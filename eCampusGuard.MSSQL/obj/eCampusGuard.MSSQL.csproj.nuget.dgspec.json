@@ -109,7 +109,7 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "dependencies": {
-            "Laraue.EfCoreTriggers.Common": {
+            "Laraue.EfCoreTriggers.SqlServer": {
               "target": "Package",
               "version": "[7.0.8, )"
             },

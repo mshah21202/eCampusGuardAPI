@@ -79,6 +79,22 @@
           }
         }
       },
+      "Laraue.EfCoreTriggers.SqlServer/7.0.8": {
+        "type": "package",
+        "dependencies": {
+          "Laraue.EfCoreTriggers.Common": "7.0.8"
+        },
+        "compile": {
+          "lib/net6.0/Laraue.EfCoreTriggers.SqlServer.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Laraue.EfCoreTriggers.SqlServer.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.AspNetCore.Cryptography.Internal/7.0.16": {
         "type": "package",
         "compile": {
@@ -1302,6 +1318,19 @@
         "lib/net6.0/Laraue.EfCoreTriggers.Common.dll",
         "lib/net6.0/Laraue.EfCoreTriggers.Common.runtimeconfig.json",
         "lib/net6.0/Laraue.EfCoreTriggers.Common.xml"
+      ]
+    },
+    "Laraue.EfCoreTriggers.SqlServer/7.0.8": {
+      "sha512": "vn+lakURxtgN2wo8GjM384X64RPVSPd9LeX4x3veYzfzq06zatVFRItlG4rPXqWSeSr5oDmAh8V5Jp0PY10d+g==",
+      "type": "package",
+      "path": "laraue.efcoretriggers.sqlserver/7.0.8",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "laraue.efcoretriggers.sqlserver.7.0.8.nupkg.sha512",
+        "laraue.efcoretriggers.sqlserver.nuspec",
+        "lib/net6.0/Laraue.EfCoreTriggers.SqlServer.dll",
+        "lib/net6.0/Laraue.EfCoreTriggers.SqlServer.xml"
       ]
     },
     "Microsoft.AspNetCore.Cryptography.Internal/7.0.16": {
@@ -3191,7 +3220,7 @@
   },
   "projectFileDependencyGroups": {
     "net7.0": [
-      "Laraue.EfCoreTriggers.Common >= 7.0.8",
+      "Laraue.EfCoreTriggers.SqlServer >= 7.0.8",
       "Microsoft.EntityFrameworkCore >= 7.0.16",
       "Microsoft.EntityFrameworkCore.Proxies >= 7.0.16",
       "Microsoft.EntityFrameworkCore.SqlServer >= 7.0.16",
@@ -3241,7 +3270,7 @@
       "net7.0": {
         "targetAlias": "net7.0",
         "dependencies": {
-          "Laraue.EfCoreTriggers.Common": {
+          "Laraue.EfCoreTriggers.SqlServer": {
             "target": "Package",
             "version": "[7.0.8, )"
           },
