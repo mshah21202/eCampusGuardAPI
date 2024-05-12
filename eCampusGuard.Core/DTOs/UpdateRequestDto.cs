@@ -6,7 +6,8 @@ namespace eCampusGuard.Core.DTOs
 {
 	public class UpdateRequestDto
 	{
-		public UpdateRequestStatus Status { get; set; }
+        public int Id { get; set; }
+        public UpdateRequestStatus Status { get; set; }
 		public UserPermitDto UserPermit { get; set; }
 		public VehicleDto UpdatedVehicle { get; set; }
         [Required]
