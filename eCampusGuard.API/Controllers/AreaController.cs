@@ -334,6 +334,41 @@ namespace eCampusGuard.API.Controllers
                 });
             }
         }
+
+        /// <summary>
+        /// Registers the camera stream url
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        [Authorize(Policy = "RequireGateStaffRole")]
+        [HttpPost("details/anplr/stream/{id}")]
+        public async Task<ActionResult> RegisterCameraUrl(int id, [FromQuery]string url, [FromQuery]bool entry)
+        {
+            var area = await _unitOfWork.Areas.GetByIdAsync(id);
+
+            if (area == null)
+            {
+                return NotFound("Area with id:" + id.ToString() + "could not be found");
+            }
+
+            if (entry)
+            {
+                area.EntryCameraStreamUrl = url;
+            } else
+            {
+                area.ExitCameraStreamUrl = url;
+            }
+
+            _unitOfWork.Areas.Update(area);
+
+            if (await _unitOfWork.CompleteAsync() > 0)
+            {
+                return Ok("Successfully registered camera url");
+            }
+
+            return BadRequest("Something went wrong");
+        }
     }
 }
 

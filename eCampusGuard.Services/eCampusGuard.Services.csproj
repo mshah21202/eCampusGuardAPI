@@ -4,11 +4,14 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UserSecretsId>82a15af7-ed78-4b29-a62f-d6d992a1c892</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.3.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0" />
+    <PackageReference Include="SendGrid" Version="9.29.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\eCampusGuard.Core\eCampusGuard.Core.csproj" />
@@ -16,9 +19,11 @@
   <ItemGroup>
     <None Remove="AutoMapper\" />
     <None Remove="TokenService\" />
+    <None Remove="EMailService\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AutoMapper\" />
     <Folder Include="TokenService\" />
+    <Folder Include="EMailService\" />
   </ItemGroup>
 </Project>
