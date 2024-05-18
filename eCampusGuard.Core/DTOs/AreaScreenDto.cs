@@ -9,6 +9,8 @@ namespace eCampusGuard.Core.DTOs
         public IEnumerable<AccessLogDto> AccessLogs { get; set; }
 		public int Occupied { get; set; }
 		public int Capacity { get; set; }
-	}
+        public string? EntryCameraStreamUrl { get; set; }
+        public string? ExitCameraStreamUrl { get; set; }
+    }
 }
 
