@@ -37,7 +37,7 @@ namespace eCampusGuard.Core.Entities
 
         public bool IsPermitValid()
         {
-            if (Permit.Expiry < DateTime.Now) return false;
+            if (Permit.Expiry < DateTime.Now && Status != UserPermitStatus.Valid) return false;
 
 			return true;
         }

@@ -9,6 +9,7 @@ using eCampusGuard.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using SendGrid;
 using static eCampusGuard.Core.Entities.PermitApplication;
 using static eCampusGuard.Core.Entities.UserPermit;
 
@@ -20,12 +21,14 @@ namespace eCampusGuard.API.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
+        private readonly INotificationService<Response> _notificationService;
 
-        public PermitApplicationController(IUnitOfWork unitOfWork, IMapper mapper, UserManager<AppUser> userManager)
+        public PermitApplicationController(IUnitOfWork unitOfWork, IMapper mapper, UserManager<AppUser> userManager, INotificationService<Response> notificationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userManager = userManager;
+            _notificationService = notificationService;
         }
 
         /// <summary>
@@ -144,9 +147,14 @@ namespace eCampusGuard.API.Controllers
                 await _unitOfWork.PermitApplications.AddAsync(application);
                 if (await _unitOfWork.CompleteAsync() > 0)
                 {
+                    if (user.Email != null)
+                    {
+                        await _notificationService.SendApplicationSubmittedAsync(user, application.Id);
+                    }
                     return Ok(new ResponseDto
                     {
-                        ResponseCode = ResponseCode.Success
+                        ResponseCode = ResponseCode.Success,
+                        Message = "Successfully submitted application"
                     });
                 }
             }
@@ -211,6 +219,24 @@ namespace eCampusGuard.API.Controllers
 
                 if (await _unitOfWork.CompleteAsync() > 0)
                 {
+                    var user = await _unitOfWork.AppUsers.GetByIdAsync(application.UserId);
+                    if (user != null && user.Email != null)
+                    {
+                        if (application.Status == PermitApplicationStatus.AwaitingPayment)
+                        {
+                            await _notificationService.SendApplicationAcceptedAsync(user, application.Id);
+                        }
+
+                        if (application.Status == PermitApplicationStatus.Denied)
+                        {
+                            await _notificationService.SendApplicationDeniedAsync(user, application.Id);
+                        }
+
+                        if (application.Status == PermitApplicationStatus.Paid)
+                        {
+                            await _notificationService.SendPaymentSuccessfulAsync(user, application.Id);
+                        }
+                    }
                     return Ok(new ResponseDto
                     {
                         ResponseCode = ResponseCode.Success,
@@ -235,7 +261,6 @@ namespace eCampusGuard.API.Controllers
 
         }
 
-        [Authorize(Policy = "RequireAdminRole")]
         [HttpPost("pay/{id}")]
         public async Task<ActionResult<ResponseDto>> OnPaymentSuccessful(int id)
         {
@@ -279,6 +304,15 @@ namespace eCampusGuard.API.Controllers
 
                 if (await _unitOfWork.CompleteAsync() > 0)
                 {
+                    var user = await _unitOfWork.AppUsers.GetByIdAsync(application.UserId);
+                    if (user != null && user.Email != null)
+                    {
+                        if (application.Status == PermitApplicationStatus.Paid)
+                        {
+                            var response = await _notificationService.SendPaymentSuccessfulAsync(user, application.Id);
+                        }
+                    }
+                        
                     return Ok(new ResponseDto
                     {
                         ResponseCode = ResponseCode.Success,

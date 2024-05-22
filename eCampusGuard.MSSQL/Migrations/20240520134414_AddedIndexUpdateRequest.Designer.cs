@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eCampusGuard.MSSQL;
 
@@ -11,9 +12,11 @@ using eCampusGuard.MSSQL;
 namespace eCampusGuard.MSSQL.Migrations
 {
     [DbContext(typeof(SQLDataContext))]
-    partial class SQLDataContextModelSnapshot : ModelSnapshot
+    [Migration("20240520134414_AddedIndexUpdateRequest")]
+    partial class AddedIndexUpdateRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -285,6 +288,12 @@ namespace eCampusGuard.MSSQL.Migrations
 
                     b.Property<int>("CurrentOccupied")
                         .HasColumnType("int");
+
+                    b.Property<string>("EntryCameraStreamUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExitCameraStreamUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Gate")
                         .IsRequired()

@@ -86,7 +86,8 @@ namespace eCampusGuard.API.Controllers
                 var user = new AppUser
                 {
                     UserName = registerDto.Username,
-                    Name = registerDto.Name
+                    Name = registerDto.Name,
+                    Email = registerDto.Email,
                 };
                 var result = await _userManager.CreateAsync(user, registerDto.Password);
 

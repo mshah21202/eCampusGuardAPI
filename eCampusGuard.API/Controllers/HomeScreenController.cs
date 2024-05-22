@@ -19,16 +19,14 @@ namespace eCampusGuard.API.Controllers
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IMapper _mapper;
         private readonly UserManager<AppUser> _userManager;
-        private readonly RoleManager<AppRole> _roleManager;
 
 
 
-        public HomeScreenController(IUnitOfWork unitOfWork, IMapper mapper, UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
+        public HomeScreenController(IUnitOfWork unitOfWork, IMapper mapper, UserManager<AppUser> userManager)
 		{
 			_unitOfWork = unitOfWork;
 			_mapper = mapper;
             _userManager = userManager;
-            _roleManager = roleManager;
         }
 
         [HttpGet()]
@@ -61,7 +59,11 @@ namespace eCampusGuard.API.Controllers
             }
             else // If the user is a normal user then add the relevant widgets
             {
-				if (user.UserPermits.Any(up => up.Status == UserPermitStatus.Valid || up.Status == UserPermitStatus.Withdrawn))
+                var userPermits = await _unitOfWork.UserPermits.FindAllAsync(up => up.UserId == user.Id);
+                var applications = await _unitOfWork.PermitApplications.FindAllAsync(pa => pa.UserId == user.Id);
+
+                
+				if (userPermits.Count() > 0 && !applications.Any(a => a.Status == PermitApplication.PermitApplicationStatus.Pending || a.Status == PermitApplication.PermitApplicationStatus.AwaitingPayment))
                 {
                     widgets.Add(HomeScreenWidget.PermitStatus);
                     widgets.Add(HomeScreenWidget.AccessLogs);
@@ -80,13 +82,44 @@ namespace eCampusGuard.API.Controllers
 
 
 		[HttpGet("notifications")]
-        public async Task<IEnumerable<NotificationDto>> Notifications()
+        public async Task<ActionResult<IEnumerable<NotificationDto>>> Notifications()
 		{
 			var user = await _unitOfWork.AppUsers.GetByIdAsync(User.GetUserId());
-			var notifications = user.Notifications.AsQueryable().ProjectTo<NotificationDto>(_mapper.ConfigurationProvider).AsNoTracking();
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+            var notifications = user.UserNotifications.OrderByDescending(un => un.Notification.Timestamp).AsQueryable().ProjectTo<NotificationDto>(_mapper.ConfigurationProvider).AsNoTracking();
 
-            return notifications;
+            return Ok(notifications);
 		}
+
+        [HttpPost("notifications/{id}")]
+        public async Task<ActionResult> ReadNotification(int id)
+        {
+            var user = await _unitOfWork.AppUsers.GetByIdAsync(User.GetUserId());
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            var usernotification = await _unitOfWork.UserNotifications.FindAsync(un => un.UserId == User.GetUserId() && un.NotificationId == id);
+            if (usernotification == null)
+            {
+                return NotFound("Notification not found");
+            }
+
+            usernotification.Read = true;
+
+            _unitOfWork.UserNotifications.Update(usernotification);
+
+            if (await _unitOfWork.CompleteAsync() < 1)
+            {
+                return BadRequest("Something went wrong");
+            } 
+
+            return Ok();
+        }
     }
 }
 

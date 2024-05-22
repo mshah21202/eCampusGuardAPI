@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eCampusGuard.MSSQL;
 
@@ -11,9 +12,11 @@ using eCampusGuard.MSSQL;
 namespace eCampusGuard.MSSQL.Migrations
 {
     [DbContext(typeof(SQLDataContext))]
-    partial class SQLDataContextModelSnapshot : ModelSnapshot
+    [Migration("20240519122404_AddedNotifications")]
+    partial class AddedNotifications
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -286,6 +289,12 @@ namespace eCampusGuard.MSSQL.Migrations
                     b.Property<int>("CurrentOccupied")
                         .HasColumnType("int");
 
+                    b.Property<string>("EntryCameraStreamUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExitCameraStreamUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Gate")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -459,27 +468,22 @@ namespace eCampusGuard.MSSQL.Migrations
 
                     b.HasIndex("UpdatedVehicleId");
 
-                    b.HasIndex("UserPermitId", "Status")
-                        .IsUnique()
-                        .HasFilter("[Status] = 0");
+                    b.HasIndex("UserPermitId");
 
                     b.ToTable("UpdateRequests");
                 });
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.UserNotification", b =>
                 {
-                    b.Property<int>("NotificationId")
-                        .HasColumnType("int");
-
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("Read")
-                        .HasColumnType("bit");
+                    b.Property<int>("NotificationId")
+                        .HasColumnType("int");
 
-                    b.HasKey("NotificationId", "UserId");
+                    b.HasKey("UserId", "NotificationId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("NotificationId");
 
                     b.ToTable("UserNotifications");
                 });
@@ -715,16 +719,16 @@ namespace eCampusGuard.MSSQL.Migrations
 
             modelBuilder.Entity("eCampusGuard.Core.Entities.UserNotification", b =>
                 {
+                    b.HasOne("eCampusGuard.Core.Entities.AppUser", "User")
+                        .WithMany("UserNotifications")
+                        .HasForeignKey("NotificationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("eCampusGuard.Core.Entities.Notification", "Notification")
                         .WithMany("UserNotifications")
                         .HasForeignKey("NotificationId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("eCampusGuard.Core.Entities.AppUser", "User")
-                        .WithMany("UserNotifications")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Notification");

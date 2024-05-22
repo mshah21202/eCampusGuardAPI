@@ -2,9 +2,11 @@
 using eCampusGuard.Core.Interfaces;
 using eCampusGuard.MSSQL;
 using eCampusGuard.Services.AutoMapper;
+using eCampusGuard.Services.NotificationServices;
 using eCampusGuard.Services.TokenService;
 using Laraue.EfCoreTriggers.SqlServer.Extensions;
 using Microsoft.EntityFrameworkCore;
+using SendGrid;
 
 namespace eCampusGuard.API.Extensions
 {
@@ -20,6 +22,7 @@ namespace eCampusGuard.API.Extensions
 
             services.AddScoped<ITokenService, TokenService>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
+            services.AddScoped<INotificationService<Response>, EmailNotificationService>();
 
             services.AddScoped<IUnitOfWork, UnitOfWorkSQL>();
 

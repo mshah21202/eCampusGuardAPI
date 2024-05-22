@@ -5,6 +5,7 @@ using eCampusGuard.API.Helpers;
 using eCampusGuard.Core.Entities;
 using eCampusGuard.Core.Interfaces;
 using eCampusGuard.MSSQL;
+using eCampusGuard.Services.EMailService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 

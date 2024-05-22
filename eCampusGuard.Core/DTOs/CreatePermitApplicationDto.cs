@@ -9,8 +9,6 @@ namespace eCampusGuard.Core.DTOs
         [Required]
         public int StudentId { get; set; }
         [Required]
-        public string StudentName { get; set; }
-        [Required]
         public IList<bool> AttendingDays { get; set; }
         [Required]
         public int SiblingsCount { get; set; }

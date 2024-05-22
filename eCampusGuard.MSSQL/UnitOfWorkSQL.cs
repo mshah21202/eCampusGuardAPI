@@ -16,6 +16,7 @@ namespace eCampusGuard.MSSQL
         public IBaseRepository<AppRole> AppRoles { get; }
         public IBaseRepository<AppUserRole> AppUserRoles { get; }
         public IBaseRepository<Notification> Notifications { get; }
+        public IBaseRepository<UserNotification> UserNotifications { get; }
         public IBaseRepository<PermitApplication> PermitApplications { get; }
         public IBaseRepository<Permit> Permits { get; }
         public IBaseRepository<Area> Areas { get; }
@@ -33,6 +34,7 @@ namespace eCampusGuard.MSSQL
             AppRoles = new BaseRepository<AppRole>(_context);
             AppUserRoles = new BaseRepository<AppUserRole>(_context);
             Notifications = new BaseRepository<Notification>(_context);
+            UserNotifications = new BaseRepository<UserNotification>(_context);
             PermitApplications = new BaseRepository<PermitApplication>(_context);
             Permits = new BaseRepository<Permit>(_context);
             Areas = new BaseRepository<Area>(_context);

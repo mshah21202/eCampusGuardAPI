@@ -7,8 +7,7 @@ namespace eCampusGuard.Core.Entities
 		public DateTime Timestamp { get; set; }
 		public string Title { get; set; }
 		public string Body { get; set; }
-		public int UserId { get; set; }
-		public virtual AppUser User { get; set; }
+		public virtual IEnumerable<UserNotification> UserNotifications { get; set; }
 	}
 }
 

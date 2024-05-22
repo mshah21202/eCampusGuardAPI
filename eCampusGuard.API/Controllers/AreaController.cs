@@ -4,6 +4,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using eCampusGuard.API.Extensions;
 using eCampusGuard.API.Helpers;
+using eCampusGuard.Core.Consts;
 using eCampusGuard.Core.DTOs;
 using eCampusGuard.Core.Entities;
 using eCampusGuard.Core.Interfaces;
@@ -19,15 +20,13 @@ namespace eCampusGuard.API.Controllers
     public class AreaController : BaseApiController
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
         private readonly IHubContext<AreaHub> _hubContext;
 
-        public AreaController(IUnitOfWork unitOfWork, IMapper mapper, UserManager<AppUser> userManager, IHubContext<AreaHub> hubContext)
+        public AreaController(IUnitOfWork unitOfWork, IMapper mapper, IHubContext<AreaHub> hubContext)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _userManager = userManager;
             _hubContext = hubContext;
         }
 
@@ -233,7 +232,7 @@ namespace eCampusGuard.API.Controllers
         {
             try
             {
-                var userpermit = await _unitOfWork.UserPermits.FindAsync(up => up.Vehicle.PlateNumber == anplrDto.PlateNumber);
+                var userpermit = await _unitOfWork.UserPermits.FirstOrDefaultAsync(up => up.Vehicle.PlateNumber == anplrDto.PlateNumber, up => up.Id, OrderBy.Descending);
 
                 if (userpermit == null)
                 {
@@ -333,41 +332,6 @@ namespace eCampusGuard.API.Controllers
                     Message = e.Message
                 });
             }
-        }
-
-        /// <summary>
-        /// Registers the camera stream url
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="url"></param>
-        /// <returns></returns>
-        [Authorize(Policy = "RequireGateStaffRole")]
-        [HttpPost("details/anplr/stream/{id}")]
-        public async Task<ActionResult> RegisterCameraUrl(int id, [FromQuery]string url, [FromQuery]bool entry)
-        {
-            var area = await _unitOfWork.Areas.GetByIdAsync(id);
-
-            if (area == null)
-            {
-                return NotFound("Area with id:" + id.ToString() + "could not be found");
-            }
-
-            if (entry)
-            {
-                area.EntryCameraStreamUrl = url;
-            } else
-            {
-                area.ExitCameraStreamUrl = url;
-            }
-
-            _unitOfWork.Areas.Update(area);
-
-            if (await _unitOfWork.CompleteAsync() > 0)
-            {
-                return Ok("Successfully registered camera url");
-            }
-
-            return BadRequest("Something went wrong");
         }
     }
 }

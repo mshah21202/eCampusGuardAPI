@@ -1,29 +1,32 @@
-﻿using System;
-using AutoMapper;
+﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using eCampusGuard.API.Extensions;
 using eCampusGuard.API.Helpers;
+using eCampusGuard.Core.Consts;
 using eCampusGuard.Core.DTOs;
 using eCampusGuard.Core.Entities;
 using eCampusGuard.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using SendGrid;
 
 namespace eCampusGuard.API.Controllers
 {
     [Authorize]
-    public class UserPermitController : BaseApiController
+    public class UserPermitsController : BaseApiController
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
+        private readonly INotificationService<Response> _notificationService;
 
-        public UserPermitController(IUnitOfWork unitOfWork, IMapper mapper, UserManager<AppUser> userManager)
+        public UserPermitsController(IUnitOfWork unitOfWork, IMapper mapper, UserManager<AppUser> userManager, INotificationService<Response> notificationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userManager = userManager;
+            _notificationService = notificationService;
         }
 
         /// <summary>
@@ -70,18 +73,20 @@ namespace eCampusGuard.API.Controllers
         {
             var user = await _unitOfWork.AppUsers.GetByIdAsync(User.GetUserId());
 
-            var userPermit = await _unitOfWork.UserPermits.FirstOrDefaultAsync(
+            var userPermits = await _unitOfWork.UserPermits.FindAllAsync(
                 up => (up.UserId == User.GetUserId()) &&
-                (up.Status == UserPermitStatus.Valid || up.Status == UserPermitStatus.Expired));
+                (up.Status == UserPermitStatus.Valid ||
+                up.Status == UserPermitStatus.Expired ||
+                up.Status == UserPermitStatus.Withdrawn), null, up => up.Id, OrderBy.Descending);
 
 
-            if (user == null || userPermit == null)
+            if (user == null || userPermits == null)
             {
                 return NotFound();
             }
 
 
-            return Ok(_mapper.Map<UserPermitDto>(userPermit));
+            return Ok(_mapper.Map<UserPermitDto>(userPermits.First()));
         }
 
         /// <summary>
@@ -228,6 +233,13 @@ namespace eCampusGuard.API.Controllers
 
                 if (await _unitOfWork.CompleteAsync() > 0)
                 {
+                    if (userPermit.Status == UserPermitStatus.Withdrawn)
+                    {
+                        await _notificationService.SendGeneralNotificationAsync(new List<AppUser> { userPermit.User }, "Your permit has been withdrawn", "Your permit " + userPermit.Permit.Name + " has been withdrwan by an admin.");
+                    } else if (userPermit.Status == UserPermitStatus.Valid)
+                    {
+                        await _notificationService.SendGeneralNotificationAsync(new List<AppUser> { userPermit.User }, "Your permit has been reinstated", "Your permit " + userPermit.Permit.Name + " has been reinstated by an admin.");
+                    }
                     return Ok(new ResponseDto
                     {
                         ResponseCode = ResponseCode.Success,
@@ -253,7 +265,6 @@ namespace eCampusGuard.API.Controllers
         /// <summary>
         /// Submits an update request for user permit
         /// </summary>
-        /// <param name="id"></param>
         /// <param name="updateRequestDto"></param>
         /// <returns></returns>
         [HttpPost("/update")]
@@ -276,7 +287,14 @@ namespace eCampusGuard.API.Controllers
                     });
                 }
 
-                
+                if (userPermit.UpdateRequests.Any(ur => ur.Status == UpdateRequestStatus.Pending))
+                {
+                    return Ok(new ResponseDto
+                    {
+                        ResponseCode = ResponseCode.Failed,
+                        Message = "You already have a pending update request."
+                    });
+                }
 
                 var vehicle = _mapper.Map<Vehicle>(updateRequestDto.Vehicle);
                 vehicle.User = user;
@@ -322,7 +340,62 @@ namespace eCampusGuard.API.Controllers
                     Message = e.Message
                 });
             }
+        }
 
+        /// <summary>
+        /// Sends a general notification to the user of a user permit.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="notificationDto"></param>
+        /// <returns></returns>
+        [Authorize(Policy = "RequireAdminRole")]
+        [HttpPost("notification/{id}")]
+        public async Task<ActionResult<ResponseDto>> SendGeneralNotification(int id, NotificationDto notificationDto)
+        {
+            var userpermit = await _unitOfWork.UserPermits.GetByIdAsync(id);
+
+            if (userpermit == null)
+            {
+                return NotFound(new ResponseDto
+                {
+                    ResponseCode = ResponseCode.Failed,
+                    Message = "Could not find user permit"
+                });
+            }
+
+            var notification = new Notification
+            {
+                Title = notificationDto.Title,
+                Body = notificationDto.Body,
+                //User = userpermit.User
+            };
+
+            await _unitOfWork.Notifications.AddAsync(notification);
+
+            if (await _unitOfWork.CompleteAsync() < 0)
+            {
+                return BadRequest(new ResponseDto
+                {
+                    ResponseCode = ResponseCode.Failed,
+                    Message = "Something went wrong"
+                });
+            }
+
+            var response = await _notificationService.SendGeneralNotificationAsync(new List<AppUser> { userpermit.User }, notification.Title, notification.Body);
+            if (response.IsSuccessStatusCode)
+            {
+                return Ok(new ResponseDto
+                {
+                    ResponseCode = ResponseCode.Success,
+                    Message = "Notification sent."
+                });
+            }
+
+            return BadRequest(new ResponseDto
+            {
+                ResponseCode = ResponseCode.Failed,
+                Message = "Something went wrong"
+            });
         }
 
         /// <summary>
@@ -330,7 +403,7 @@ namespace eCampusGuard.API.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("update-requests")]
-        public async Task<ActionResult<IEnumerable<UpdateRequestDto>>> GetUpdateRequests(int id, [FromQuery]UpdateRequestsParams requestsParams)
+        public async Task<ActionResult<IEnumerable<UpdateRequestDto>>> GetUpdateRequests([FromQuery]UpdateRequestsParams requestsParams)
         {
             var user = await _unitOfWork.AppUsers.GetByIdAsync(User.GetUserId());
 
@@ -375,7 +448,7 @@ namespace eCampusGuard.API.Controllers
 
             var roles = await _userManager.GetRolesAsync(user);
             var isAdmin = roles.Any(r => r == "Admin");
-            var updateRequest = await _unitOfWork.UpdateRequests.FindAllAsync(
+            var updateRequest = await _unitOfWork.UpdateRequests.FindAsync(
                 ur => (ur.Id == id) && (!isAdmin ? ur.UserPermit.UserId == User.GetUserId() : true)
                 );
 
@@ -424,10 +497,12 @@ namespace eCampusGuard.API.Controllers
 
                 if (await _unitOfWork.CompleteAsync() > 0)
                 {
+                    await _notificationService.SendGeneralNotificationAsync(new List<AppUser> { updateRequest.UserPermit.User }, "New response to your update request", "Your update request has been " + (updateRequest.Status == UpdateRequestStatus.Accepted ? "accpted" : "denied"));
+
                     return Ok(new ResponseDto
                     {
                         ResponseCode = ResponseCode.Success,
-                        Message = "Successfully accepted update request"
+                        Message = "Successfully " + (accept ? "accepted" : "denied") + " update request"
                     });
                 }
 

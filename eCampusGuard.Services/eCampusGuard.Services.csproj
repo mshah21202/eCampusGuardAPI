@@ -19,11 +19,11 @@
   <ItemGroup>
     <None Remove="AutoMapper\" />
     <None Remove="TokenService\" />
-    <None Remove="EMailService\" />
+    <None Remove="NotificationServices\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AutoMapper\" />
     <Folder Include="TokenService\" />
-    <Folder Include="EMailService\" />
+    <Folder Include="NotificationServices\" />
   </ItemGroup>
 </Project>

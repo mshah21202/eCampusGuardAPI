@@ -13,8 +13,8 @@ namespace eCampusGuard.Core.Interfaces
         Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> criteria, string[] includes = null, Expression<Func<T, object>> orderBy = null,
             string orderByDirection = OrderBy.Ascending, int? skip = 0, int? take = 0);
 
-        Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> criteria, bool Tracking = false, string[] includes = null);
-        T? FirstOrDefault(Expression<Func<T, bool>> criteria, string[] includes = null);
+        Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> criteria, Expression<Func<T, object>> orderBy = null, string orderByDirection = OrderBy.Ascending, bool Tracking = false, string[] includes = null);
+        T? FirstOrDefault(Expression<Func<T, bool>> criteria, Expression<Func<T, object>> orderBy = null, string orderByDirection = OrderBy.Ascending, string[] includes = null);
 
         T Add(T entity);
         Task<T> AddAsync(T entity);

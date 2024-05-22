@@ -74,7 +74,9 @@ namespace eCampusGuard.API.Data
                 users.Add(new AppUser
                 {
                     Name = user["name"],
-                    UserName = user["userName"]
+                    UserName = user["userName"],
+                    Email = "mohamad.shahin2002@gmail.com",
+                    EmailConfirmed = true,
                 });
             }
 
@@ -92,7 +94,9 @@ namespace eCampusGuard.API.Data
                     var userr = new AppUser
                     {
                         Name = user.Name,
-                        UserName = user.UserName
+                        UserName = user.UserName,
+                        Email = user.Email,
+                        EmailConfirmed = user.EmailConfirmed
                     };
                     await _userManager.CreateAsync(userr, "$hahin1234B_");
                     await _userManager.AddToRoleAsync(userr, "Member");
@@ -327,7 +331,7 @@ namespace eCampusGuard.API.Data
                 await SeedVehicles();
             }
 
-            if (await _unitOfWork.PermitApplications.CountAsync() < 20)
+            if (await _unitOfWork.PermitApplications.CountAsync() < 5)
             {
                 await SeedApplications();
             }

@@ -24,6 +24,8 @@ namespace eCampusGuard.MSSQL
         public DbSet<PermitApplication> PermitApplications { get; set; }
         public DbSet<AccessLog> AccessLogs { get; set; }
         public DbSet<UpdateRequest> UpdateRequests { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<UserNotification> UserNotifications { get; set; }
 
         public SQLDataContext()
         {
@@ -97,6 +99,7 @@ namespace eCampusGuard.MSSQL
                 .HasForeignKey(ur => ur.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+
             builder.Entity<AppRole>()
                 .HasMany(r => r.UserRoles)
                 .WithOne(ur => ur.Role)
@@ -121,7 +124,24 @@ namespace eCampusGuard.MSSQL
                 .HasIndex(u => u.UserName)
                 .IsUnique();
 
+            builder.Entity<Notification>()
+                .Property(n => n.Timestamp)
+                .HasDefaultValueSql("GETDATE()");
 
+            builder.Entity<UserNotification>()
+                .HasOne(un => un.Notification)
+                .WithMany(n => n.UserNotifications)
+                .HasForeignKey(un => un.NotificationId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<UserNotification>()
+                .HasOne(un => un.User)
+                .WithMany(u => u.UserNotifications)
+                .HasForeignKey(un => un.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<UserNotification>()
+                .HasKey(un => new { un.NotificationId, un.UserId });
 
             //        builder.Entity<UserPermit>()
             //.HasKey(up => new { up.UserId, up.PermitId });
@@ -188,6 +208,11 @@ namespace eCampusGuard.MSSQL
                 .WithMany(p => p.UpdateRequests)
                 .HasForeignKey(ur => ur.UpdatedVehicleId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<UpdateRequest>()
+                .HasIndex(ur => new { ur.UserPermitId, ur.Status })
+                .IsUnique()
+                .HasFilter("[Status] = 0");
 
 
             builder.Entity<UserPermit>()

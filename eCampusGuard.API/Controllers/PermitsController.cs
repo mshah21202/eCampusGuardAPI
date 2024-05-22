@@ -16,14 +16,12 @@ namespace eCampusGuard.API.Controllers
 	public class PermitsController : BaseApiController
 	{
         private readonly IUnitOfWork _unitOfWork;
-        private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
 
-        public PermitsController(IUnitOfWork unitOfWork, IMapper mapper, UserManager<AppUser> userManager)
+        public PermitsController(IUnitOfWork unitOfWork, IMapper mapper)
 		{
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _userManager = userManager;
         }
 
         /// <summary>

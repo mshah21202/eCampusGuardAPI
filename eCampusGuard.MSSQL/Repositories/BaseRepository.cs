@@ -211,13 +211,22 @@ namespace eCampusGuard.MSSQL.Repositories
             return await _context.Set<T>().CountAsync(criteria);
         }
 
-        public async Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> criteria, bool Tracking = false, string[] includes = null)
+        public async Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> criteria, Expression<Func<T, object>> orderBy = null, string orderByDirection = OrderBy.Ascending, bool Tracking = false, string[] includes = null)
         {
             IQueryable<T> query = _context.Set<T>();
             if (Tracking)
             {
                 query = query.AsNoTracking();
             }
+
+            if (orderBy != null)
+            {
+                if (orderByDirection == OrderBy.Ascending)
+                    query = query.OrderBy(orderBy);
+                else
+                    query = query.OrderByDescending(orderBy);
+            }
+
             if (includes != null)
                 foreach (var incluse in includes)
                     query = query.Include(incluse);
@@ -225,13 +234,21 @@ namespace eCampusGuard.MSSQL.Repositories
             return await query.FirstOrDefaultAsync(criteria);
         }
 
-        public T? FirstOrDefault(Expression<Func<T, bool>> criteria, string[] includes = null)
+        public T? FirstOrDefault(Expression<Func<T, bool>> criteria, Expression<Func<T, object>> orderBy = null, string orderByDirection = OrderBy.Ascending, string[] includes = null)
         {
             IQueryable<T> query = _context.Set<T>();
 
             if (includes != null)
                 foreach (var incluse in includes)
                     query = query.Include(incluse);
+
+            if (orderBy != null)
+            {
+                if (orderByDirection == OrderBy.Ascending)
+                    query = query.OrderBy(orderBy);
+                else
+                    query = query.OrderByDescending(orderBy);
+            }
 
             return query.FirstOrDefault(criteria);
         }

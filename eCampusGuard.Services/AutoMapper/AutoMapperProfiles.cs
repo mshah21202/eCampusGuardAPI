@@ -12,6 +12,13 @@ namespace eCampusGuard.Services.AutoMapper
             CreateMap<VehicleDto, Vehicle>();
             CreateMap<Vehicle, VehicleDto>();
 
+            CreateMap<UserNotification, NotificationDto>()
+                .ForMember(dest => dest.Read, opt => opt.MapFrom(src => src.Read))
+                .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Notification.Title))
+                .ForMember(dest => dest.Body, opt => opt.MapFrom(src => src.Notification.Body))
+                .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src => src.Notification.Timestamp))
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Notification.Id));
+
             CreateMap<AppUser, UserDto>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.StudentId, opt => opt.MapFrom(src => src.UserName));

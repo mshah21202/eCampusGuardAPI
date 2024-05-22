@@ -9,6 +9,7 @@ namespace eCampusGuard.Core.Interfaces
         IBaseRepository<AppRole> AppRoles { get; }
         IBaseRepository<AppUserRole> AppUserRoles { get; }
         IBaseRepository<Notification> Notifications { get; }
+        IBaseRepository<UserNotification> UserNotifications { get; }
         IBaseRepository<PermitApplication> PermitApplications { get; }
         IBaseRepository<Permit> Permits { get; }
         IBaseRepository<Area> Areas { get; }
