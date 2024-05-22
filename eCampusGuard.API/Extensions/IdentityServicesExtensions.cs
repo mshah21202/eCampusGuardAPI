@@ -4,6 +4,7 @@ using eCampusGuard.Core.Entities;
 using eCampusGuard.MSSQL;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace eCampusGuard.API.Extensions
@@ -14,8 +15,12 @@ namespace eCampusGuard.API.Extensions
 		{
 			services.AddIdentityCore<AppUser>(opt =>
 			{
-				opt.Password.RequireNonAlphanumeric = false;
-			})
+                opt.Password.RequireDigit = true;
+                opt.Password.RequireLowercase = true;
+                opt.Password.RequireNonAlphanumeric = false;
+                opt.Password.RequireUppercase = true;
+                opt.Password.RequiredLength = 8;
+            })
 			.AddRoles<AppRole>()
 			.AddRoleManager<RoleManager<AppRole>>()
 			.AddSignInManager<SignInManager<AppUser>>()
