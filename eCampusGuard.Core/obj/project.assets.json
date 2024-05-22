@@ -928,26 +928,26 @@
     ]
   },
   "packageFolders": {
-    "/Users/mohamadshahin/.nuget/packages/": {}
+    "C:\\Users\\sarah\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/mohamadshahin/Development/eCampusGuardAPI/eCampusGuard.Core/eCampusGuard.Core.csproj",
+      "projectUniqueName": "C:\\Users\\sarah\\Source\\Repos\\mshah21202\\eCampusGuardAPI\\eCampusGuard.Core\\eCampusGuard.Core.csproj",
       "projectName": "eCampusGuard.Core",
-      "projectPath": "/Users/mohamadshahin/Development/eCampusGuardAPI/eCampusGuard.Core/eCampusGuard.Core.csproj",
-      "packagesPath": "/Users/mohamadshahin/.nuget/packages/",
-      "outputPath": "/Users/mohamadshahin/Development/eCampusGuardAPI/eCampusGuard.Core/obj/",
+      "projectPath": "C:\\Users\\sarah\\Source\\Repos\\mshah21202\\eCampusGuardAPI\\eCampusGuard.Core\\eCampusGuard.Core.csproj",
+      "packagesPath": "C:\\Users\\sarah\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\sarah\\Source\\Repos\\mshah21202\\eCampusGuardAPI\\eCampusGuard.Core\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/mohamadshahin/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\sarah\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
       ],
       "sources": {
-        "/Users/mohamadshahin/Projects/Laraue.EfCoreTriggers/src/Laraue.EfCoreTriggers.Common/bin/Release": {},
-        "/Users/mohamadshahin/Projects/Laraue.EfCoreTriggers/src/Laraue.EfCoreTriggers.SqlServer/bin/Release": {},
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -960,6 +960,11 @@
         "warnAsError": [
           "NU1605"
         ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
       }
     },
     "frameworks": {
@@ -991,7 +996,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.313/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.201\\RuntimeIdentifierGraph.json"
       }
     }
   }
