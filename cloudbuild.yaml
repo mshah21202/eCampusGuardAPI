@@ -7,8 +7,8 @@
       - '--builder=gcr.io/buildpacks/builder:v1'
       - '--network=cloudbuild'
       - '--path=.'
-      - '--env=GOOGLE_BUILDABLE=src/Web'
-      - '--env=GOOGLE_ENTRYPOINT=cd bin && dotnet Web.dll'
+      - '--env=GOOGLE_BUILDABLE=eCampusGuard.API'
+      - '--env=GOOGLE_ENTRYPOINT=cd bin && dotnet eCampusGuard.API.dll'
     id: Buildpack
     entrypoint: pack
   - name: gcr.io/cloud-builders/docker
