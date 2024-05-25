@@ -14,10 +14,13 @@ namespace eCampusGuard.API.Extensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
+            
             services.AddDbContext<SQLDataContext>(options =>
+            {
                 options.UseLazyLoadingProxies().UseSqlServer(
                     config.GetConnectionString("SQLConnection"), b => b.MigrationsAssembly(typeof(SQLDataContext).Assembly.FullName)
-                ).UseSqlServerTriggers()
+                ).UseSqlServerTriggers();
+            }
             );
 
             services.AddScoped<ITokenService, TokenService>();
