@@ -224,17 +224,17 @@ namespace eCampusGuard.API.Controllers
                     {
                         if (application.Status == PermitApplicationStatus.AwaitingPayment)
                         {
-                            await _notificationService.SendApplicationAcceptedAsync(user, application.Id);
+                            //await _notificationService.SendApplicationAcceptedAsync(user, application.Id);
                         }
 
                         if (application.Status == PermitApplicationStatus.Denied)
                         {
-                            await _notificationService.SendApplicationDeniedAsync(user, application.Id);
+                            //await _notificationService.SendApplicationDeniedAsync(user, application.Id);
                         }
 
                         if (application.Status == PermitApplicationStatus.Paid)
                         {
-                            await _notificationService.SendPaymentSuccessfulAsync(user, application.Id);
+                            //await _notificationService.SendPaymentSuccessfulAsync(user, application.Id);
                         }
                     }
                     return Ok(new ResponseDto
