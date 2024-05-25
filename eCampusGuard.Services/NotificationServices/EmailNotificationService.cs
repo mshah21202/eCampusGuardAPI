@@ -30,7 +30,9 @@ namespace eCampusGuard.Services.NotificationServices
             _unitofWork = unitOfWork;
             _from = new EmailAddress(fromAddress);
             _sendGridClient = new SendGridClient(apiKey);
-		}
+            System.Console.Error.WriteLine("API Key: " + apiKey);
+            System.Console.Error.WriteLine("Address: " + fromAddress);
+        }
 
         public async Task<Response> SendApplicationAcceptedAsync(AppUser recipient, int applicationId)
         {
