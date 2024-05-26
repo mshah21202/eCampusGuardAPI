@@ -40,11 +40,13 @@ namespace eCampusGuard.Services.AutoMapper
                 .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.User.Name))
                 .ForMember(dest => dest.Vehicle, opt => opt.MapFrom(src => src.Vehicle))
                 .ForMember(dest => dest.Permit, opt => opt.MapFrom(src => src.Permit))
-                .ForMember(dest => dest.UserPermitId, opt => opt.MapFrom(src => src.UserPermitId));
+                .ForMember(dest => dest.UserPermitId, opt => opt.MapFrom(src => src.UserPermitId))
+                .ForMember(dest => dest.AcademicYear, opt => opt.MapFrom(src => src.Year));
 
             CreateMap<PermitApplicationDto, PermitApplication>()
                 .ForMember(dest => dest.Vehicle, opt => opt.MapFrom(src => src.Vehicle))
-                .ForMember(dest => dest.Permit, opt => opt.MapFrom(src => src.Permit));
+                .ForMember(dest => dest.Permit, opt => opt.MapFrom(src => src.Permit))
+                .ForMember(dest => dest.Year, opt => opt.MapFrom(src => src.AcademicYear));
 
             CreateMap<CreatePermitApplicationDto, PermitApplication>()
                 .ForMember(dest => dest.Vehicle, opt => opt.MapFrom(src => src.Vehicle))
