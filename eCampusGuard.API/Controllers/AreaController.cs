@@ -236,6 +236,17 @@ namespace eCampusGuard.API.Controllers
 
                 if (userpermit == null)
                 {
+                    var notFoundResult = new AnplrResultDto
+                    {
+                        PlateNumber = anplrDto.PlateNumber,
+                        AllowedToEnter = false,
+                        Days = new List<bool>(),
+                        PermitName = "",
+                        Status = UserPermitStatus.Expired,
+                    };
+
+                    await _hubContext.Clients.Group(id.ToString()).SendAsync("ReceiveAnplrResult", notFoundResult);
+
                     return BadRequest(new ResponseDto
                     {
                         ResponseCode = ResponseCode.Failed,
