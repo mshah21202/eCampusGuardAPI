@@ -483,6 +483,9 @@ namespace eCampusGuard.API.Controllers
 
                     var userPermit = updateRequest.UserPermit;
 
+                    userPermit.PermitApplication.PhoneNumber = updateRequest.PhoneNumber;
+                    userPermit.PermitApplication.PhoneNumberCountry = updateRequest.PhoneNumberCountry;
+
                     userPermit.Vehicle = updateRequest.UpdatedVehicle;
 
                     _unitOfWork.UserPermits.Update(userPermit);
