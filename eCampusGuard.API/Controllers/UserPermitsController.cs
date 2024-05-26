@@ -214,7 +214,7 @@ namespace eCampusGuard.API.Controllers
                     });
                 }
 
-                if (!userPermit.IsPermitValid())
+                if ((userPermit.Permit.Expiry < DateTime.Now))
                     return BadRequest(new ResponseDto
                     {
                         ResponseCode = ResponseCode.Failed,

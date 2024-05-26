@@ -75,7 +75,7 @@ namespace eCampusGuard.Services.AutoMapper
                 .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))
                 .ForMember(dest => dest.Vehicle, opt => opt.MapFrom(src => src.Vehicle))
                 .ForMember(dest => dest.Permit, opt => opt.MapFrom(src => src.Permit))
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.IsPermitValid() ? src.Status : UserPermitStatus.Expired))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Permit.Expiry >= DateTime.Now ? src.Status : UserPermitStatus.Expired))
                 .ForMember(dest => dest.Expiry, opt => opt.MapFrom(src => src.Permit.Expiry))
                 .ForMember(dest => dest.PermitApplication, opt => opt.MapFrom(src => src.PermitApplication));
 
