@@ -48,7 +48,8 @@ namespace eCampusGuard.Services.AutoMapper
 
             CreateMap<CreatePermitApplicationDto, PermitApplication>()
                 .ForMember(dest => dest.Vehicle, opt => opt.MapFrom(src => src.Vehicle))
-                .ForMember(dest => dest.PermitId, opt => opt.MapFrom(src => src.PermitId));
+                .ForMember(dest => dest.PermitId, opt => opt.MapFrom(src => src.PermitId))
+                .ForMember(dest => dest.Year, opt => opt.MapFrom(src => src.AcademicYear));
 
             CreateMap<Area, AreaDto>()
                 .ForMember(dest => dest.Occupied, opt => opt.MapFrom(src => src.Occupied));
